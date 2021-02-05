@@ -1,0 +1,14 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PhpComposerInstaller", "PhpComposerInstaller\PhpComposerInstaller.csproj", "{55B45205-40DC-42C9-A826-F70269D29772}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{55B45205-40DC-42C9-A826-F70269D29772}.Release|Any CPU.ActiveCfg = Debug|Any CPU
+		{55B45205-40DC-42C9-A826-F70269D29772}.Release|Any CPU.Build.0 = Debug|Any CPU
+	EndGlobalSection
+EndGlobal

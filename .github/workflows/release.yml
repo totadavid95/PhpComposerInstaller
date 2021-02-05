@@ -1,0 +1,42 @@
+﻿# Thanks to Jung-Hyun Nam
+# Original source: https://medium.com/@rkttu/write-your-github-actions-workflow-for-build-windows-application-94e5a989f477
+
+name: Create GitHub Release
+on:
+  push:
+    tags:
+      - 'v*'
+jobs:
+  create_release:
+    name: Create GitHub Release
+    runs-on: windows-2019
+    steps:
+      - uses: actions/checkout@v2
+      - name: Build Binary
+        shell: cmd
+        run: call ./Build.cmd
+      - name: Build Artifact
+        shell: powershell
+        run: Compress-Archive -Path ./PhpComposerInstaller/bin/Release/*.exe -DestinationPath ./PhpComposerInstaller.zip
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@latest
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.ref }}
+          release_name: Release ${{ github.ref }}
+          body: |
+            Automated Release by GitHub Action CI
+          draft: false
+          prerelease: false
+      - name: Upload Release Asset
+        id: upload-release-asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./PhpComposerInstaller.zip
+          asset_name: PhpComposerInstaller.zip
+          asset_content_type: application/zip
