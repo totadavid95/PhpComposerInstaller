@@ -1,5 +1,5 @@
 ﻿// ---------------------------------------------------
-// Szerveroldali webprogramozás telepítő
+// PHP, Xdebug, Composer telepítő
 // Készítette: Tóta Dávid
 // Kapcsolat: totadavid95@inf.elte.hu
 // ---------------------------------------------------
