@@ -2,7 +2,12 @@
 Ezt a telepítőt elsősorban az általam is oktatott Szerveroldali webprogramozás tárgy hallgatóinak készítettem segítségképpen, hogy a PHP, Xdebug és Composer egyszerűen telepíthető és beállítható legyen Windowsos környezetben. 
 
 ## Letöltés
-A futtatható telepítő letölthető a [Releases](https://github.com/totadavid95/PhpComposerInstaller/releases) szekcióból (az adott verzióhoz tartozó *PhpComposerInstaller.zip* fájl).
+
+**A legfrissebb verzió az alábbi gombra kattintva tölthető le:**
+
+[![Letöltés](https://raw.githubusercontent.com/totadavid95/PhpComposerInstaller/master/images/download.png)](https://github.com/totadavid95/PhpComposerInstaller/releases/latest/download/PhpComposerInstaller.zip)
+
+A korábbi kiadások a [Releases](https://github.com/totadavid95/PhpComposerInstaller/releases) szekcióból tölthetők le (az adott verzióhoz tartozó *PhpComposerInstaller.zip* fájlban van a futtatható telepítő, a másik kettő csak a forráskód zippelve).
 
 Ha a PHP futtatáskor dll hibát ír, telepítsd az OS architektúrádnak (32 vagy 64 bit) megfelelő Visual C++ runtime library-t:
 - [vc_redist.x86.exe](https://aka.ms/vs/16/release/vc_redist.x86.exe)
