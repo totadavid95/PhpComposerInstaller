@@ -1,101 +1,166 @@
 # PHP, Xdebug, Composer telepítő
-Ezt a telepítőt elsősorban az általam is oktatott Szerveroldali webprogramozás tárgy hallgatóinak készítettem segítségképpen, hogy a PHP, Xdebug és Composer egyszerűen telepíthető és beállítható legyen Windowsos környezetben. 
-
-## Letöltés
 
 **A legfrissebb verzió az alábbi gombra kattintva tölthető le:**
 
 [![Letöltés](https://raw.githubusercontent.com/totadavid95/PhpComposerInstaller/master/images/download.png)](https://github.com/totadavid95/PhpComposerInstaller/releases/latest/download/PhpComposerInstaller.zip)
 
-A korábbi kiadások a [Releases](https://github.com/totadavid95/PhpComposerInstaller/releases) szekcióból tölthetők le (az adott verzióhoz tartozó *PhpComposerInstaller.zip* fájlban van a futtatható telepítő, a másik kettő csak a forráskód zippelve).
+- Letöltés után csomagold ki a *.zip* fájlt, majd futtasd a `PhpComposerInstall.exe`-t. Ne futtasd Asztalról!
+- A telepítő futtatásához legalább [.NET 4.7.2](https://dotnet.microsoft.com/en-us/download/dotnet-framework/net472) szükséges (Windows 10, 11 rendszereken ez a követelmény alapból teljesül).
 
-Ha a PHP futtatáskor dll hibát ír, telepítsd az OS architektúrádnak (32 vagy 64 bit) megfelelő Visual C++ runtime library-t:
-- [vc_redist.x86.exe](https://aka.ms/vs/16/release/vc_redist.x86.exe)
-- [vc_redist.x64.exe](https://aka.ms/vs/16/release/vc_redist.x64.exe)
+Jelen dokumentáció midig a legújabb verzióra vonatkozik, a régebbi verziók a GitHub history-ban tekinthetők meg.
 
-## Működés
-A telepítő a futtatásakor letölti az említett programok legfrissebb változatait, és telepíti, beállítja őket. Ha a programmal végeztünk már korábban telepítést, majd pedig újra futtatjuk, akkor törli az aktuális telepítést, és a legfrissebb verziókkal újra végez egy tiszta telepítést. Ez használható hibás telepítés javítására vagy a programok frissítésére is. A telepítő nem igényel rendszergazdai jogokat, mivel csak az aktuális Windows felhasználó szintjén működik.
+Tartalom:
+- [PHP, Xdebug, Composer telepítő](#php-xdebug-composer-telepítő)
+  - [A projekt ismertetése](#a-projekt-ismertetése)
+  - [Korábbi verziók letöltése](#korábbi-verziók-letöltése)
+  - [A telepítő működése](#a-telepítő-működése)
+  - [Parancssori kapcsolók](#parancssori-kapcsolók)
+  - [Motiváció](#motiváció)
+  - [Gyakran előforduló problémák](#gyakran-előforduló-problémák)
+    - [Hibák jelentése](#hibák-jelentése)
+  - [Kézi telepítés menete](#kézi-telepítés-menete)
+    - [PHP telepítése](#php-telepítése)
+    - [Visual C++ Redistributable telepítése](#visual-c-redistributable-telepítése)
+    - [Xdebug kiegészítő telepítése a PHP-hoz](#xdebug-kiegészítő-telepítése-a-php-hoz)
+    - [Composer telepítése](#composer-telepítése)
+    - [Telepítések hozzáadása a Path környezeti változóhoz](#telepítések-hozzáadása-a-path-környezeti-változóhoz)
+  - [Telepített eszközök tesztelése](#telepített-eszközök-tesztelése)
+  - [Segítség, támogatás](#segítség-támogatás)
+
+## A projekt ismertetése
+Ezt a telepítőt elsősorban az általam is oktatott Szerveroldali webprogramozás tárgy hallgatóinak készítettem segítségképpen, hogy a PHP, Xdebug és Composer egyszerűen telepíthető és beállítható legyen Windowsos környezetben. 
+
+## Korábbi verziók letöltése
+Az összes eddig kiadott telepítő elérhető a [Releases](https://github.com/totadavid95/PhpComposerInstaller/releases) oldalon. Az adott verzióhoz tartozó *PhpComposerInstaller.zip* fájlban van a futtatható telepítő, a másik kettő csak a forráskód zippelve.
+
+## A telepítő működése
+A telepítő a futtatásakor letölti az említett programok legfrissebb változatait, és telepíti, beállítja őket. Ha a programmal végeztél már korábban telepítést, majd pedig újra futtatod, akkor törli az aktuális telepítést, és a legfrissebb verziókkal újra végez egy tiszta telepítést. Ez használható hibás telepítés javítására vagy a programok frissítésére is. A telepítő nem igényel rendszergazdai jogokat, mivel csak az aktuális Windows felhasználó szintjén működik.
+
+## Parancssori kapcsolók
+A telepítő az alábbi parancssori kapcsolókkal van ellátva. Futtatáskor így lehet átadni a kapcsolókat, pl. `PhpComposerInstall.exe --no-cleanup`.
+
+Elérhető kapcsolók:
+- `--uninstall`
+  - Telepítés teljes törlése
+- `--no-cleanup`
+  - Telepítés után hagyja meg a letöltött / ideiglenes fájlokat
 
 ## Motiváció
 Ahhoz, hogy az órákon megfelelően tudjunk dolgozni, valamint gyakorolni, az egyetemi labor gépeken (illetve sok esetben az otthoni gépeken is) be kell állítani egy lokális környezetet. Ennek a környezetnek a beállítása, hogy kellően egyszerű legyen, és mégis jól működjön, még a laborgépeken is (amiken alapból nincs PHP, sem Composer), nem feltétlenül magától értetődő feladat. Ennek érdekében dolgoztuk ki ezt a telepítési rendszert, amit ha egy felhasználó egyszer elvégez, onnantól mindig tudja használni azt az adott gépen.
 
-## Hibát találtál?
+## Gyakran előforduló problémák
 Ha a telepítő vagy a telepített szoftverek valamelyike nem működik megfelelően, akkor elképzelhető, hogy ezen okok valamelyike a felelős érte:
 - Egyes víruskereső programok (tipikusan pl. az Avast) valamelyik telepítési lépést, jellemzően a Composert tévesen kártevőnek minősíti (másnéven false positive riasztás). Ha ilyen szoftvert használsz, próbáld meg szüneteltetni a védelmét, és úgy futtatni a telepítőt. A telepítő nem "vírusos", a forráskód megtalálható itt GitHub-on, a build is itt történik, Actions segítségével. A folyamat teljesen átlátható és biztonságos.
 - Elképzelhető, hogy valamilyen "ingadozás" történt a hálózatban és a telepítő valamiért nem tudott valamelyik kiszolgálóhoz kapcsolódni, ahonnan letölti a programokat vagy időközben megszakadt a kapcsolat, pl. letöltéskor. Érdemes még egy próbát tenni, akár picit később.
+- Hibákhoz vezethet, tipikusan pl. a Tinker esetében, ha a Windows **felhasználónévben** ékezet van, hiszen ennélfogva minden útvonal ékezetes, ami az adott felhasználóhoz tartozik. Mivel a telepítő a felhasználó szintjén végzi a telepítést, ezért a telepített PHP és Composer szintén érintett. Ennek egy lehetséges megoldására [készítettem egy videót](https://www.youtube.com/watch?v=_zL3Pxnidj0).
 
+### Hibák jelentése
 Ha ezek egyike sem vezet megoldásra, akkor kérlek, hogy nyiss egy GitHub issue-t, vagy írj nekem Teamsen egy üzenetet, amelyben részletezed a problémát, és az oda vezető lépések sorozatát. Igyekszek minél előbb megoldást találni a problémára.
 
-## Kézi telepítés
-Arra az esetre, ha a telepítő valamiért nem működne, alább ismertetem a telepítés és a beállítás menetét (amit jobb esetben a program hajt végre helyettünk).
+## Kézi telepítés menete
+A telepítő lényegében az alábbi lépéseket hajtja végre automatizáltan.
 
 ### PHP telepítése
-- A [https://windows.php.net/download](https://windows.php.net/download) oldalról a legfrissebb PHP kiadás __x64 Non Thread Safe__ verzióját kell letölteni, majd kicsomagolni.
-- A __php.ini-development__ fájlról készítsünk egy másolatot, amit nevezzünk el __php.ini__-nek.
-- Nyissuk meg a __php.ini__ fájlt, és hajtsuk végre a következő módosításokat:
-  - Keressünk rá a következő sorra:  `;extension_dir = "ext"`, és "kommentezzük ki", vagyis hagyjuk el a pontosvesszőt az elejéről. Erre azért van szükség, hogy a PHP a saját mappájában keresse majd a kiegészítőket (mivel lokálisan telepítjük, és alapból nem jó helyen keresné).
-  - Most pedig engedélyeznünk kell néhány kiegészítőt. A következő sorokat is élesítenünk kell (ezek kb. egy blokkban vannak):
-     ```ini
+- A PHP hivatalos oldalán a jelenleg támogatott PHP verziók szerepelnek: [https://windows.php.net/download](https://windows.php.net/download) 
+- Töltsd le a neked leginkább megfelelő verzió __x86 / x64 Non Thread Safe__ verzióját. Ha nem tudod, mi alapján szeretnél verziót választani, válaszd a legújabbat (legmagasabb verziószám). Az x86 azt jelenti, hogy 32 bites rendszerre való, az x64 pedig azt, hogy 64 bites rendszerre.
+- Csomagold ki a letöltött zip fájlt.
+- A PHP-nak szüksége lesz egy konfigurációs fájlra, amelynek a neve __php.ini__ lesz, azonban ilyen fájl alapértelmezés szerint nincs a kicsomagolt adatok között. A __php.ini-development__ fájl lényegében egy sample a config-hoz, ezért készíts róla egy másolatot, amit nevezz el __php.ini__-nek.
+- Nyisd meg a __php.ini__ fájlt, és hajtsd végre a következő módosításokat:
+  - Keress rá a következő sorra:  `;extension_dir = "ext"`, és "kommentezd ki", vagyis hagyd el a pontosvesszőt az elejéről. Erre azért van szükség, hogy a PHP a saját mappájában keresse majd a kiegészítőket (mivel lokálisan telepítjük, és alapból nem jó helyen keresné).
+  - Ezután engedélyezned kell néhány kiegészítőt, amikre azért lesz szükség, hogy a PHP által későbbiekben futtatott Composer, Laravel, stb megfelelően tudjon működni. Vagyis az alábbi sorokat is "kommentezd ki", engedélyezve ezzel az adott kiegészítőket:
+    ```ini
+    ;extension=curl
     ;extension=fileinfo
     ;extension=mbstring
     ;extension=openssl
     ;extension=pdo_mysql
     ;extension=pdo_sqlite
     ```
-- Ha kész vagyunk, mentsük el a __php.ini__ fájlt.
-- Az egész mappa tartalmát másoljuk át ide: 
-  `%LOCALAPPDATA%\Programs\php` (ha még nincs a Programs mappában php mappa, létre kell hozni).
+- Ha kész vagy, mentsd el a __php.ini__ fájlt.
+- Az egész PHP mappa tartalmát másold át ide: 
+  `%LOCALAPPDATA%\Programs\php` (ha még nincs a `Programs` mappában `php` mappa, létre kell hozni).
 
-Tipp: Fájlkezelő címsorába másoljuk be, hogy `%LOCALAPPDATA%\Programs`
+Tipp: Fájlkezelő címsorába másoljuk be, hogy `%LOCALAPPDATA%\Programs`:
 
-#### XDebug kiegészítő telepítése a PHP-hoz
-- A [https://xdebug.org/download](https://xdebug.org/download) oldalról a __Windows binaries__ részből válasszuk ki a telepített PHP verziónak megfelelőt (ne felejtsük el, hogy x86 / x64 kell-e, a TS a Thread Safe-t jelenti a végén, az aktuális PHP verziónkat és az architektúrát pedig a `php -v` parancs adja meg).
-- Ha sikerült, mentsük el __php_xdebug.dll__ néven.
-- Másoljuk be a PHP __ext__ mappájába a __php_xdebug.dll__ fájlt.
-- Nyissuk meg a __php.ini__ fájlt, és írjuk az alábbiakat a fájl legaljára:
+### Visual C++ Redistributable telepítése
+
+A [telepítési követelmények](https://www.php.net/manual/en/install.windows.requirements.php) leírják, hogy Windowson szükséges a Visual C++ Redistributable jelenléte a PHP futtatásához. Ezért, ha a PHP az első futtatáskor "dll hibát" ír, telepítsd az OS architektúrádnak (32 vagy 64 bit) megfelelő Visual C++ runtime library-t:
+- [vc_redist.x86.exe](https://aka.ms/vs/16/release/vc_redist.x86.exe) (32 bit)
+- [vc_redist.x64.exe](https://aka.ms/vs/16/release/vc_redist.x64.exe) (64 bit)
+
+### Xdebug kiegészítő telepítése a PHP-hoz
+- A [https://xdebug.org/download](https://xdebug.org/download) oldalról a __Windows binaries__ részből válaszd ki a telepített PHP verziónak megfelelőt (tartsd szem előtt, hogy x86 (32 bit) / x64 (64 bit) kell-e, a TS / NTS a Thread Safe-t / Non-Thread Safe-t jelenti a végén, az aktuális PHP verziódat és az architektúrát pedig a `php -v` parancs adja meg).
+- A Xdebug-ot töltsd le __php_xdebug.dll__ néven.
+- Másold be a PHP __ext__ mappájába az imént letöltött __php_xdebug.dll__ fájlt.
+- Nyisd meg a __php.ini__ fájlt. Az ini fájl az alábbi mintát követi:
   ```ini
-  [XDebug]
-  xdebug.remote_enable = 1
-  xdebug.remote_autostart = 1
-  zend_extension=xdebug
+  [szekcio_neve]
+  beallitas_neve = beallitas_erteke
   ```
-- Mentsük el a __php.ini__ fájlt.
-- Ha fut valamilyen PHP-s folyamat a gépen, akkor azt újra kell indítani annak érdekében, hogy betöltse ezt a kiegészítőt is.
+  - Először engedélyezd az Xdebug-ot Zend extension-ként a `[PHP]` szekció alatt:
+    ```ini
+    [PHP]
+    ; Ennek a kommentnek a helyén elég sok beállítást és kommentet fogsz találni, 
+    ; de a következő [szekció] elé, még a [PHP] szekció aljára írd be, hogy:
+    zend_extension = xdebug
+    ``` 
+  - Utána pedig add meg az Xdebug-hoz tartozó beállításokat a __php.ini__ fájl legalján, egy új `[xdebug]` szekció felvételével:
+    ```ini
+    [xdebug]
+    xdebug.cli_color = 1
+    xdebug.client_host = localhost
+    xdebug.client_port = 9003
+    ```
+    - Az összes Xdebug-hoz tartozó beállítást részletes leírással együtt a [hivatalos dokumentációban találod meg](https://xdebug.org/docs/all_settings).
+- Mentsd el a __php.ini__ fájlt.
+- Ha ezközben futott olyan PHP-s folyamat a gépen, amely az imént konfigurált PHP-hoz köthető, akkor azt a folyamatot újra kell indítani annak érdekében, hogy betöltse az új PHP beállításokat.
 
-#### Composer telepítése
-- A [https://getcomposer.org/composer-stable.phar](https://getcomposer.org/composer-stable.phar) linkre kattintva töltsük le a legfrissebb Composer kiadást.
-- A letöltött fájlt `composer.phar` néven bemásoljuk a következő mappába: `%LOCALAPPDATA%\Programs\composer` (ha még nincs a Programs mappában composer mappa, létre kell hozni).
-- Szintén ebben a __composer__ mappában csinálunk egy `composer.bat` fájlt, aminek a tartalma a következő egy sor legyen: 
- `@php "%~dp0composer.phar" %*`
+### Composer telepítése
+- A [https://getcomposer.org/download/latest-2.x/composer.phar](https://getcomposer.org/download/latest-2.x/composer.phar) linkre kattintva töltsd le a legfrissebb Composer v2 kiadást.
+- A letöltött `composer.phar` nevű fájlt másold a következő mappába: `%LOCALAPPDATA%\Programs\composer` (ha még nincs a Programs mappában composer mappa, létre kell hozni).
+- Mivel ez egy PHP fájl (PHAR - **PH**p **AR**chive), ezért a Windows nem tudja direktben futtatni (mint a php.exe-t), hanem kell hozzá egy olyan parancsfájl, amit az OS meg tud hívni, és ami átadja a PHP futtató környezetnek a PHAR fájlt. Így válik majd lehetővé, hogy a CMD ablakban műkdödjön a `composer` parancs, tehát lényegében ezt a `bat` fájlt fogja hívni. A lényeg: ebben a __composer__ mappában csinálj egy `composer.bat` nevű fájlt is, aminek a tartalma a következő egy sor legyen:
+ 
+  ```bat
+  @php "%~dp0composer.phar" %*
+  ```
+- Ezáltal lényegében a `composer.bat` meghívásakor a PHP értelmező futtatja a Composert, ami egy PHP fájl, átadva neki a paramétereket is (% a végén).
 
-#### Hozzáadás a Path környezeti változóhoz
-Ahhoz, hogy parancssorból meg tudjuk hívni a php, illetve a composer parancsokat, hozzá kell az előbb elkészített két mappát adni a Path környezeti változóhoz.
+### Telepítések hozzáadása a Path környezeti változóhoz
+Lényegében ezen a ponton majdnem kész vagy a telepítéssel, azonban jelenleg csak úgy hívható a PHP és a Composer, ha megadod az abszolút útvonalat hozzá, de ha csak annyit írsz be a parancssorba, hogy `php` vagy `composer`, arra azt írja, hogy a parancs nem található.
 
-Ez a legegyszerűbben úgy tehető meg, hogy beírjuk a Start menü keresőbe, hogy "Fiókhoz tartozó környezeti változók szerkesztése", vagy angol Windowson "Edit environment variables for your account". Alternatív lehetőség a Win+R, majd `rundll32 sysdm.cpl,EditEnvironmentVariables` parancs kiadása.
+Ahhoz, hogy bármilyen megnyitott parancssorból egyszerűen meg lehessen hívni a `php`, illetve a `composer` parancsokat, hozzá kell a `%localappdata/Programs` mappán belül az imént elkészített két mappát adni a Path környezeti változóhoz.
 
-Itt fontos, hogy a megjelenő ablak fenti részében dolgozzunk, mivel az vonatkozik a __felhasználó__ környezeti változóira, és a labor gépeken nem lehet módosítani a rendszerhez tartozó tulajdonságokat.
+Ez a legegyszerűbben úgy tehető meg, hogy beírod a Start menü keresőbe, hogy "Fiókhoz tartozó környezeti változók szerkesztése", vagy angol Windowson "Edit environment variables for your account". Alternatív lehetőség a Win+R, majd `rundll32 sysdm.cpl,EditEnvironmentVariables` parancs kiadása.
 
-## Telepítés tesztelése
-Ha minden fent ismertetett műveletet sikeresen elvégeztünk, a parancssorban elérhetővé válik a php és a composer (a már megnyitott parancssorokban nem, azokat újra meg kell nyitni), ezt így próbálhatjuk ki:
+Itt fontos, hogy a megjelenő ablak fenti részében dolgozz, mivel az vonatkozik a __felhasználó__ környezeti változóira, és a labor gépeken amúgy sem lehet módosítani a rendszerhez tartozó tulajdonságokat.
+
+**A változás érvénybe léptetéséhez az esetlegesen korábbról nyitva lévő parancssorokat be kell zárni.** A beállítások elvgézsére után megnyitott parancssorok azonban már módosult Path értéket fogják átvenni, tehát azokban elérhetők lesznek a parancsok.
+
+## Telepített eszközök tesztelése
+Ha minden fent ismertetett műveletet sikeresen elvégeztél, a parancssorban elérhetővé válik a `php` és a `composer` (a már megnyitott parancssorokban nem, azokat újra meg kell nyitni), ezt így próbálhatod ki:
 `php -v` és `composer -V`
-Mindkét esetben ki kell írja a telepített verzió adatait.
+
+Mindkét esetben ki kell írja a telepített verzió adatait, továbbá a PHP-nál meg kell jelenjen az Xdebug-ra vonatkozó információ is.
 
 A PHP-t részletesebben úgy tudod tesztelni, ha csinálsz például egy *test.php* nevű fájlt, amibe beleírod ezt:
 ```php
 <?php
-	phpinfo();
+    // PHP adatainak kiírása
+    phpinfo();
+
+    // Xdebug adatainak kiírása
+    xdebug_info();
 ?>
 ```
 
-Ezt követően nyiss egy parancssort az adott mappában, vagy cd parancssal lépj bele, utána add ki a következő parancsot: 
+Ezt követően nyiss egy parancssort az adott mappában, vagy cd parancssal lépj be a `test.php` mappájába, utána pedig add ki a következő parancsot: 
 `php -S localhost:3000 test.php`
 
-Majd a böngészőben nyisd meg a [http://localhost:3000/](http://localhost:3000/) oldalt.
+Ezt követően a böngészőben nyisd meg a [http://localhost:3000/](http://localhost:3000/) oldalt.
 
-Ez egy átfogó jelentést ad a PHP adatairól és beállításairól, pl. láthatod a verziószámát, bekapcsolt kiegészítőket, van-e XDebug, stb. A parancssort zárd be a végén.
+Ez egy átfogó riportot fog megjeleníteni a PHP adatairól és beállításairól, pl. láthatod a verziószámát, bekapcsolt kiegészítőket, van-e Xdebug, stb. A parancssort zárd be a végén. A parancssor bezárása értelemszerűen azt is jelenti, hogy a szerver futása is megáll.
+
+Ugyanez a két teszt elvégezhető az `InstallTest` mappában lévő eszközökkel is.
 
 ## Segítség, támogatás
-Ha a telepítéssel kapcsolatban kérdésed van, keress bátran és segítek szívesen (totadavid95@inf.elte.hu vagy Teams chat).
-
-## Fejlesztési lehetőségek
-Nyilván vannak még fejlesztési lehetőségek, mint pl. a telepített szoftverek verziójának kiválasztása (jelenleg csak a legfrissebbet tölti le), parancssori alkalmazás helyett valami szebb, GUI-s változat, viszont ezeket akkor csak akkor csinálom meg, ha lesz elegendő időm rá.
+Ha a telepítéssel kapcsolatban kérdésed van, keress bátran és segítek szívesen (totadavid95@inf.elte.hu vagy Teams chat). Ha van GitHub account-od, issue-t is nyithatsz.
