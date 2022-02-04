@@ -18,13 +18,14 @@ Tartalom:
   - [Motiváció](#motiváció)
   - [Gyakran előforduló problémák](#gyakran-előforduló-problémák)
     - [Hibák jelentése](#hibák-jelentése)
-  - [Kézi telepítés menete](#kézi-telepítés-menete)
+  - [Kézi telepítés menete (Windows)](#kézi-telepítés-menete-windows)
     - [PHP telepítése](#php-telepítése)
     - [Visual C++ Redistributable telepítése](#visual-c-redistributable-telepítése)
     - [Xdebug kiegészítő telepítése a PHP-hoz](#xdebug-kiegészítő-telepítése-a-php-hoz)
     - [Composer telepítése](#composer-telepítése)
     - [Telepítések hozzáadása a Path környezeti változóhoz](#telepítések-hozzáadása-a-path-környezeti-változóhoz)
   - [Telepített eszközök tesztelése](#telepített-eszközök-tesztelése)
+  - [Kézi telepítés menete (Linux)](#kézi-telepítés-menete-linux)
   - [Segítség, támogatás](#segítség-támogatás)
 
 ## A projekt ismertetése
@@ -57,7 +58,7 @@ Ha a telepítő vagy a telepített szoftverek valamelyike nem működik megfelel
 ### Hibák jelentése
 Ha ezek egyike sem vezet megoldásra, akkor kérlek, hogy nyiss egy GitHub issue-t, vagy írj nekem Teamsen egy üzenetet, amelyben részletezed a problémát, és az oda vezető lépések sorozatát. Igyekszek minél előbb megoldást találni a problémára.
 
-## Kézi telepítés menete
+## Kézi telepítés menete (Windows)
 A telepítő lényegében az alábbi lépéseket hajtja végre automatizáltan.
 
 ### PHP telepítése
@@ -162,5 +163,79 @@ Ez egy átfogó riportot fog megjeleníteni a PHP adatairól és beállításair
 
 Ugyanez a két teszt elvégezhető az `InstallTest` mappában lévő eszközökkel is.
 
+## Kézi telepítés menete (Linux)
+Az automatikus telepítő csak Windowson működik, azonban ez a fejezet segíthet a Linuxra való telepítésben. A telepítés [ezen a leíráson](https://tecadmin.net/how-to-install-php-8-on-ubuntu-20-04/) alapul, és tesztelve lett egy Xubuntu 20.04-es rendszeren VirtualBox-ban.
+
+1. Csomaglista frissítése:
+   
+   ```shell
+   sudo apt update
+   ```
+2. Telepíteni kell egy olyan csomagot, ami segít a PPA-k kezelésében:
+   
+   ```shell
+   sudo apt install software-properties-common -y 
+   ```
+3. Hozzá kell adni egy új [PPA csomagrepository-t](https://launchpad.net/~ondrej/+archive/ubuntu/php), ami a PHP-t kezeli:
+   
+   ```shell
+   sudo add-apt-repository ppa:ondrej/php 
+   ```
+4. Mostmár a rendszer látja a PHP-s csomagokat, tehát az alap PHP telepítése következik. Meg kell adni a verziószámot, de értelemszerűen el is lehet térni az itt példaként mutatott verziószámtól (a leírás megírásának pillanatában a 8.1 a legújabb), csak következetesen kell használni, és mindenhol ugyanazt kell utána megadni.
+  
+   ```shell
+   sudo apt install php8.1
+   ```
+5. Szükséges PHP kiegészítők telepítése. Ezek alapvetően az alábbiak, de igény szerint telepíthetsz továbbiakat is:
+   
+   ```shell
+   sudo apt install php8.1-cli php8.1-xml php8.1-curl php8.1-fileinfo php8.1-mbstring php8.1-sqlite3 php8.1-xdebug
+   ```
+6. Teszteld le, hogy működik-e a PHP! Add ki az alábbi parancsot:
+   
+   ```shell
+   php -v
+   ```
+   - Ennek eredményeként pedig az alábbihoz hasonló kimenetet kell látnod (értelemszerűen nem pont ezekkel a verziószámokkal):
+     ```text
+     PHP 8.1.2 (cli) (built: Jan 24 2022 10:42:33) (NTS)
+     Copyright (c) The PHP Group
+     Zend Engine v4.1.2, Copyright (c) Zend Technologies
+         with Zend OPcache v8.1.2, Copyright (c), by Zend Technologies
+         with Xdebug v3.1.2, Copyright (c) 2002-2021, by Derick Rethans
+     ```
+
+7. Composer telepítése. Ezen a ponton már elérhető a PHP CLI, tehát a [Composer honlapján](https://getcomposer.org/doc/faqs/how-to-install-composer-programmatically.md) megadott letöltést, telepítést segítő szkript is működik:
+
+    ```shell
+    #!/bin/sh
+
+    EXPECTED_CHECKSUM="$(php -r 'copy("https://composer.github.io/installer.sig", "php://stdout");')"
+    php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');"
+    ACTUAL_CHECKSUM="$(php -r "echo hash_file('sha384', 'composer-setup.php');")"
+
+    if [ "$EXPECTED_CHECKSUM" != "$ACTUAL_CHECKSUM" ]
+    then
+      >&2 echo 'ERROR: Invalid installer checksum'
+      rm composer-setup.php
+      exit 1
+    fi
+
+    php composer-setup.php --quiet
+    RESULT=$?
+    rm composer-setup.php
+    exit $RESULT
+    ```
+    - Ezt a szkriptet mentsd el (pl. `composer.sh` néven), adj neki futtatási jogot, majd hívd meg.
+8. Az előző pont hatására létrejött egy `composer.phar` nevű fájl. Azonban ez még nem érhető el mindenhonnan. Ahhoz, hogy a Composer globálisan is elérhető legyen a gépeden, ezt az imént létrejött fájlt be kell másolni a `bin` mappába:
+   
+   ```shell
+   sudo mv composer.phar /usr/local/bin/composer
+   ```
+9. Composer tesztelése. Győződj meg róla, hogy a Composer megfelelően működik-e mindenhol, az alábbi parancs kiadásával:
+
+   ```shell
+   composer -V
+   ```
 ## Segítség, támogatás
 Ha a telepítéssel kapcsolatban kérdésed van, keress bátran és segítek szívesen (totadavid95@inf.elte.hu vagy Teams chat). Ha van GitHub account-od, issue-t is nyithatsz.
