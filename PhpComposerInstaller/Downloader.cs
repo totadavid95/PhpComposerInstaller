@@ -32,8 +32,8 @@ namespace PhpComposerInstaller {
 
         private void Completed(object sender, AsyncCompletedEventArgs e) {
             _progressBar.Dispose();
-            if (e.Cancelled) Console.WriteLine("Visszavonva.");
-            else Console.WriteLine("Letöltve.");
+            if (e.Cancelled) Console.WriteLine("Cancelled.");
+            else Console.WriteLine("Downloaded.");
             _completed = true;
             _waitHandle.Set();
         }

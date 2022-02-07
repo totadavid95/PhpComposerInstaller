@@ -35,7 +35,7 @@ namespace PhpComposerInstaller {
                 result.Add("version", match.Groups["version"].Value);
                 result.Add("downloadlink", "https://xdebug.org/files/" + match.Groups["filename"].Value);
             } else {
-                throw new Exception("Nem sikerült detektálni a legújabb Xdebug kiadást, a regex nem ad eredményt");
+                throw new Exception("The latest Xdebug release could not be detected because the regular expression didn't find a match.");
             }
             return result;
         }

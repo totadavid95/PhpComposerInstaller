@@ -13,18 +13,18 @@ namespace PhpComposerInstaller {
             // PHP
             if (Directory.Exists(programsFolder + @"\php")) {
                 OS.DeleteDirectory(programsFolder + @"\php");
-                Console.WriteLine("  * Elözöleg telepített PHP eltávolítva.");
+                Console.WriteLine("  * The previously installed PHP has been successfully uninstalled.");
             }
 
             // Composer
             if (Directory.Exists(programsFolder + @"\composer")) {
                 OS.DeleteDirectory(programsFolder + @"\composer");
-                Console.WriteLine("  * Elözöleg telepített Composer eltávolítva.");
+                Console.WriteLine("  * The previously installed Composer has been successfully uninstalled.");
             }
             OS.DirectoryCopy("PhpComposerInstallerDownloads/php", programsFolder + @"\php", true);
-            Console.WriteLine("  * PHP telepítve.");
+            Console.WriteLine("  * PHP has been successfully installed.");
             OS.DirectoryCopy("PhpComposerInstallerDownloads/composer", programsFolder + @"\composer", true);
-            Console.WriteLine("  * Composer telepítve.");
+            Console.WriteLine("  * Composer has been successfully installed.");
         }
 
         public static void RemoveFromLocalAppData() {
@@ -34,51 +34,51 @@ namespace PhpComposerInstaller {
             // PHP
             if (Directory.Exists(programsFolder + @"\php")) {
                 OS.DeleteDirectory(programsFolder + @"\php");
-                Console.WriteLine("  * PHP fájljai eltávolítva.");
+                Console.WriteLine("  * PHP program files have been successfully removed.");
             }
             else {
-                Console.WriteLine("  * A PHP nincs telepítve.");
+                Console.WriteLine("  * PHP program files not found, maybe PHP is not installed.");
             }
 
             // Composer
             if (Directory.Exists(programsFolder + @"\composer")) {
                 OS.DeleteDirectory(programsFolder + @"\composer");
-                Console.WriteLine("  * Composer fájljai eltávolítva.");
+                Console.WriteLine("  * Composer program files have been successfully removed.");
             }
             else {
-                Console.WriteLine("  * A Composer nincs telepítve.");
+                Console.WriteLine("  * Composer program files not found, maybe PHP is not installed.");
             }
         }
 
         public static void AddToPathIfNecessary() {
             // PHP
             if (OS.AddToCurrentUserPath(Environment.GetEnvironmentVariable("LocalAppData") + @"\Programs\php")) {
-                Console.WriteLine("  * A PHP hozzá lett adva a PATH környezeti változóhoz.");
+                Console.WriteLine("  * PHP was successfully added to the PATH environment variable.");
             } else {
-                Console.WriteLine("  * A PHP már hozzá van adva a PATH környezeti változóhoz.");
+                Console.WriteLine("  * PHP is already added to the PATH environment variable.");
             }
 
             // Composer
             if (OS.AddToCurrentUserPath(Environment.GetEnvironmentVariable("LocalAppData") + @"\Programs\composer")) {
-                Console.WriteLine("  * A Composer hozzá lett adva a PATH környezeti változóhoz.");
+                Console.WriteLine("  * Composer was successfully added to the PATH environment variable.");
             } else {
-                Console.WriteLine("  * A Composer már hozzá van adva a PATH környezeti változóhoz.");
+                Console.WriteLine("  * Composer is already added to the PATH environment variable.");
             }
         }
 
         public static void RemoveFromPathIfNecessary() {
             // PHP
             if (OS.RemoveFromCurrentUserPath(Environment.GetEnvironmentVariable("LocalAppData") + @"\Programs\php")) {
-                Console.WriteLine("  * A PHP el lett távolítva a PATH környezeti változóból.");
+                Console.WriteLine("  * PHP was successfully removed from the PATH environment variable.");
             } else {
-                Console.WriteLine("  * A PHP nem volt hozzáadva a PATH környezeti változóhoz.");
+                Console.WriteLine("  * PHP is not included in the PATH environment variable.");
             }
 
             // Composer
             if (OS.RemoveFromCurrentUserPath(Environment.GetEnvironmentVariable("LocalAppData") + @"\Programs\composer")) {
-                Console.WriteLine("  * A Composer el lett távolítva a PATH környezeti változóból.");
+                Console.WriteLine("  * Composer was successfully removed from the PATH environment variable.");
             } else {
-                Console.WriteLine("  * A Composer nem volt hozzáadva a PATH környezeti változóhoz.");
+                Console.WriteLine("  * Composer is not included in the PATH environment variable.");
             }
         }
     }

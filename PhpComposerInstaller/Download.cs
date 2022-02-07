@@ -14,10 +14,10 @@ namespace PhpComposerInstaller {
 
         public static void DownloadAndCheckFile(string label, Uri address, string checksum, string destination) {
             DownloadFile(label, address, destination);
-            Console.Write("  * Letöltött fájl ellenőrzése... ");
+            Console.Write("  * Checking downloaded file... ");
             if (new Checksum().Check(destination, checksum)) Console.WriteLine("OK.");
             else {
-                throw new Exception("Az ellenőrző összeg (sha256 checksum) nem egyezik, valószínűleg sérült a letöltött fájl.");
+                throw new Exception("SHA256 checksum does not match, the file may be corrupted, please try again.");
             }
         }
     }

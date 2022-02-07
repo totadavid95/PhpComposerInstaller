@@ -1,2 +1,2 @@
-:: Megnyitja a telepitesek mappajat
+:: Open %LOCALAPPDATA%/Programs folder
 %systemroot%\explorer.exe %localappdata%\Programs

@@ -43,7 +43,7 @@ namespace PhpComposerInstaller {
                 if (process.MainModule != null) {
                     string processPath = process.MainModule.FileName;
                     if (processPath == location) {
-                        Console.WriteLine("    * Folyamat leállítása: " + processPath);
+                        Console.WriteLine("    * Killing process: " + processPath);
                         process.Kill();
                         result = true;
                     }

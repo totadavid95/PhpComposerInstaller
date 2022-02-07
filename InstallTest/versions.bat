@@ -1,5 +1,6 @@
-:: PHP verziojanak lekerese
+:: Get PHP version
 call php -v
-:: Composer verziojanak lekerese (nagy V)
+:: Get Composer version
 call composer -V
+:: Wait
 @pause

@@ -1,8 +1,8 @@
-# Tesztelő eszközök
+# Testing tools
 
 - `phpinfo.bat`:
-  - Elindít egy PHP szervert a 3000-es porton, majd megnyitja azt a böngészőben, megjelenítve ezzel a PHP és az Xdebug összes beállítását.
+  - Starts a PHP server on port 3000 and opens it in MS Edge, which displays all PHP and Xdebug settings.
 - `version.bat`:
-  - Lekéri és kiírja a PHP és a Composer verzióját, ha telepítve vannak.
+  - Retrieves and prints the version of PHP and Composer if they are installed.
 - `explorer.bat`: 
-  - Megnyitja a telepítések mappáját a fájlkezelőben.
+  - Opens the installation folder in the Windows file explorer.

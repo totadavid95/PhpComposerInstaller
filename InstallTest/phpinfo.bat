@@ -1,4 +1,4 @@
-:: Oldal megnyitasa MS Edge-ben
+:: Open link in MS Edge (this will take some time)
 start microsoft-edge:http://localhost:3000
-:: PHP szerver inditasa
+:: Start PHP server
 call php -S localhost:3000

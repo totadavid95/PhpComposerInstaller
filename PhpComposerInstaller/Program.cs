@@ -32,7 +32,7 @@ namespace PhpComposerInstaller {
         }
 
         private static void HandleUninstall() {
-            Console.WriteLine("1. fázis: Eltávolítás");
+            Console.WriteLine("Phase 1: Uninstalling");
             Console.WriteLine("---------");
             Installer.RemoveFromLocalAppData();
             Installer.RemoveFromPathIfNecessary();
@@ -40,7 +40,7 @@ namespace PhpComposerInstaller {
 
         private static void HandlePriorCheck() {
             // 32 vagy 64 bit
-            Console.WriteLine("  * Detektált architektúra: " + (Environment.Is64BitOperatingSystem ? "64 bit" : "32 bit"));
+            Console.WriteLine("  * Detected architecture: " + (Environment.Is64BitOperatingSystem ? "64 bit" : "32 bit"));
 
             // Jelenleg telepített verziók vizsgálata
             var phpLocations = OS.FindProgramLocations("php");
@@ -48,11 +48,11 @@ namespace PhpComposerInstaller {
 
             // A telepítő útvonalai
             if (phpLocations.Contains(defaultPhpLocation) || File.Exists(defaultPhpLocation)) {
-                Console.WriteLine("  * Jelenleg telepített PHP verzió: " + PHP.GetPhpVersionByLocation(defaultPhpLocation));
+                Console.WriteLine("  * Currently installed PHP version: " + PHP.GetPhpVersionByLocation(defaultPhpLocation));
                 phpAlreadyInstalled = true;
             }
             if (composerLocations.Contains(defaultComposerLocation) || File.Exists(defaultComposerLocation)) {
-                Console.WriteLine("  * Jelenleg telepített Composer verzió: " + Composer.GetComposerVersionByLocation(defaultComposerLocation));
+                Console.WriteLine("  * Currently installed Composer version: " + Composer.GetComposerVersionByLocation(defaultComposerLocation));
                 composerAlreadyInstalled = true;
             }
 
@@ -68,21 +68,21 @@ namespace PhpComposerInstaller {
             ).ToList();
 
             if (foreignPhpLocations.Count > 0 || foreignComposerLocations.Count > 0) {
-                Console.WriteLine("  * FIGYELEM! Olyan PHP/Composer telepítéseket érzékeltünk, amelyeket nem ez a telepítő rakott fel,");
-                Console.WriteLine("    azonban mivel globális szinten elérhetőek (benne vannak a Path nevű környezeti változóban, ezáltal");
-                Console.WriteLine("    úgymond 'bárhonnan' elérhetők), emiatt pedig ütközni fognak a telepítendő verziókkal. A probléma");
-                Console.WriteLine("    megoldásához vagy vedd ki őket a Path-ból, vagy nevezd át a php.exe / composer.bat fájlokat valami");
-                Console.WriteLine("    másra az alábbi útvonalakon (az alábbi útvonalon lévő telepítések az érintettek):");
+                Console.WriteLine("  * ATTENTION! The installer detected a PHP/Composer installation that is included in the PATH environment");
+                Console.WriteLine("    variable, but it was not installed by this installer. This installer also adds the installed PHP to the");
+                Console.WriteLine("    PATH, however if there are two PHPs in this environment variable at the same time, it leads to a conflict.");
+                Console.WriteLine("    One possible solution to this problem may be to remove the paths listed below from the PATH variable, or");
+                Console.WriteLine("    rename the php.exe file in them to php7.4.exe/php8.0.exe or anything other than php.exe.");
                 Console.WriteLine(" ");
                 if (foreignPhpLocations.Count > 0) {
-                    Console.WriteLine("    Detektált PHP telepítések:");
+                    Console.WriteLine("    Detected PHP installs:");
                     foreach (var phpLocation in foreignPhpLocations) {
                         Console.WriteLine("      - " + phpLocation + " (" + PHP.GetPhpVersionByLocation(phpLocation) + ")");
                     }
                     Console.WriteLine(" ");
                 }
                 if (foreignComposerLocations.Count > 0) {
-                    Console.WriteLine("  Detektált Composer  telepítések:");
+                    Console.WriteLine("    Detected Composer installs:");
                     foreach (var composerLocation in foreignComposerLocations) {
                         Console.WriteLine("      - " + composerLocation + " (" + Composer.GetComposerVersionByLocation(composerLocation) + ")");
                     }
@@ -90,36 +90,38 @@ namespace PhpComposerInstaller {
                 }
             }
             else {
-                Console.WriteLine("  * Nem található ütközés");
+                Console.WriteLine("  * No problems found.");
             }
         }
 
         private static void HandlePhpReleaseSelection() {
-            Console.Write("  * PHP kiadások lekérése a hivatalos php.net oldalról... ");
+            Console.Write("  * Fetching currently supported PHP releases from the official php.net site... ");
             phpReleases = PHP.GetPhpReleases();
             Console.WriteLine("OK.");
 
-            Console.WriteLine("  * Jelenleg az alábbi támogatott kiadások érhetők el. Válaszd ki, melyiket szeretnéd telepíteni!");
+            Console.WriteLine("  * Currently, these supported PHP editions are available. Please choose which one");
+            Console.WriteLine("    you want to install!");
             if (phpAlreadyInstalled) {
-                Console.WriteLine("    FIGYELEM! A telepítés felülírja/frissíti a jelenleg telepített PHP-t, Composer-t!");
+                Console.WriteLine("    ATTENTION! Immediately after the selection, the installer overwrites/updates");
+                Console.WriteLine("    the currently installed PHP/Composer in the %LOCALAPPDATA%/Programs directory!");
             }
             selectedPhpRelease = Selector.ShowSelectorMenu(phpReleases.Keys.ToArray());
-            Console.WriteLine("  * Kiválasztva: " + selectedPhpRelease);
+            Console.WriteLine("  * Selected: " + selectedPhpRelease);
         }
 
         private static void HandleTempDirectory() {
             if (Directory.Exists("PhpComposerInstallerDownloads")) {
                 OS.DeleteDirectory("PhpComposerInstallerDownloads");
-                Console.WriteLine("  * Korábbi temp könyvtár (PhpComposerInstallerDownloads) törölve.");
+                Console.WriteLine("  * Temp directory (PhpComposerInstallerDownloads) deleted.");
             }
             Directory.CreateDirectory("PhpComposerInstallerDownloads");
             Directory.CreateDirectory("PhpComposerInstallerDownloads/composer");
-            Console.WriteLine("  * Aktuális temp könyvtár (PhpComposerInstallerDownloads) létrehozva.");
+            Console.WriteLine("  * Temp directory (PhpComposerInstallerDownloads) created.");
         }
 
         private static void HandleDownloads() {
             Download.DownloadAndCheckFile(
-                "PHP " + selectedPhpRelease + " letöltése... ",
+                "Downloading PHP " + selectedPhpRelease + "... ",
                 new Uri(phpReleases[selectedPhpRelease]["downloadlink"]),
                 phpReleases[selectedPhpRelease]["checksum"],
                 "PhpComposerInstallerDownloads/php.zip"
@@ -128,21 +130,21 @@ namespace PhpComposerInstaller {
             var xdebug = Xdebug.GetLatestPackage(selectedPhpRelease, phpReleases[selectedPhpRelease]["builtwith"]);
             xdebugVersion = xdebug["version"];
             Download.DownloadAndCheckFile(
-                "Xdebug letöltése PHP " + selectedPhpRelease + " " + phpReleases[selectedPhpRelease]["builtwith"].ToUpper() + " NTS-hez... ",
+                "Downloading Xdebug for PHP " + selectedPhpRelease + " " + phpReleases[selectedPhpRelease]["builtwith"].ToUpper() + " NTS... ",
                 new Uri(xdebug["downloadlink"]),
                 xdebug["checksum"],
                 "PhpComposerInstallerDownloads/xdebug.dll"
             );
 
             Download.DownloadFile(
-                "Xdebug " + xdebug["version"] + " forráskód letöltése... ",
+                "Downloading Xdebug " + xdebug["version"] + " source code... ",
                 new Uri("https://github.com/xdebug/xdebug/archive/refs/tags/" + xdebug["version"] + ".zip"),
                 "PhpComposerInstallerDownloads/xdebug_src.zip"
             );
 
             // Ez kell a PHP-hoz, lásd https://www.php.net/manual/en/install.windows.requirements.php
             Download.DownloadFile(
-                "Visual C++ Redistributable " + (Environment.Is64BitOperatingSystem ? "x64" : "x86") + " letöltése... ",
+                "Downloading Visual C++ Redistributable " + (Environment.Is64BitOperatingSystem ? "x64" : "x86") + " installer... ",
                 new Uri(
                     Environment.Is64BitOperatingSystem
                         ? "https://aka.ms/vs/16/release/vc_redist.x64.exe"
@@ -152,7 +154,7 @@ namespace PhpComposerInstaller {
             );
 
             Download.DownloadAndCheckFile(
-                "A legfrissebb Composer v2 letöltése... ",
+                "Downloading latest Composer 2.x... ",
                 new Uri(Composer.GetDownloadLinkForLatestVersion()),
                 Composer.GetChecksumForLatestVersion(),
                 "PhpComposerInstallerDownloads/composer.phar"
@@ -161,20 +163,20 @@ namespace PhpComposerInstaller {
 
         private static void HandleConfiguration() {
             // PHP
-            Console.Write("  * PHP kicsomagolása... ");
+            Console.Write("  * Extracting PHP program files... ");
             ZipFile.ExtractToDirectory("PhpComposerInstallerDownloads/php.zip", "PhpComposerInstallerDownloads/php");
             Console.WriteLine("OK.");
 
-            Console.Write("  * Xdebug konfiguráció kinyerése... ");
+            Console.Write("  * Extracting Xdebug configuration... ");
             ZipFile.ExtractToDirectory("PhpComposerInstallerDownloads/xdebug_src.zip", "PhpComposerInstallerDownloads/xdebug_src");
             File.Copy("PhpComposerInstallerDownloads/xdebug_src/xdebug-" + xdebugVersion + "/xdebug.ini", "PhpComposerInstallerDownloads/xdebug.ini");
             Console.WriteLine("OK.");
 
-            Console.Write("  * xdebug.dll bemásolása a php/ext könyvtárába... ");
+            Console.Write("  * Copy xdebug.dll to php/ext directory... ");
             File.Copy("PhpComposerInstallerDownloads/xdebug.dll", "PhpComposerInstallerDownloads/php/ext/php_xdebug.dll");
             Console.WriteLine("OK.");
 
-            Console.Write("  * php.ini létrehozása, beállítása... ");
+            Console.Write("  * Create and configure php.ini... ");
             File.Copy("PhpComposerInstallerDownloads/php/php.ini-development", "PhpComposerInstallerDownloads/php/php.ini", true);
 
             string phpIniContent = File.ReadAllText("PhpComposerInstallerDownloads/php/php.ini");
@@ -199,20 +201,20 @@ namespace PhpComposerInstaller {
             Console.WriteLine("OK.");
 
             // Composer
-            Console.Write("  * composer.phar bemásolása a composer könyvtárába... ");
+            Console.Write("  * Copy composer.phar to the composer directory... ");
             File.Copy("PhpComposerInstallerDownloads/composer.phar", "PhpComposerInstallerDownloads/composer/composer.phar");
             Console.WriteLine("OK.");
 
-            Console.Write("  * Batch fájl létrehozása a Composerhez... ");
+            Console.Write("  * Create runnable .bat file for Composer... ");
             Composer.GenerateComposerBatchFile();
             Console.WriteLine("OK.");
         }
 
         private static void HandleInstallation() {
-            Console.WriteLine("  * A telepítő által érintett PHP process-ek leállítása (ha vannak)...");
+            Console.WriteLine("  * Stop PHP processes that conflicts with this installer... ");
             PHP.KillRunningPhpProcessesByLocation(defaultPhpLocation);
 
-            Console.Write("  * Visual C++ Redistributable telepítő meghívása... ");
+            Console.Write("  * Run Visual C++ Redistributable Installer... ");
             var proc = new Process
             {
                 StartInfo = new ProcessStartInfo
@@ -235,10 +237,10 @@ namespace PhpComposerInstaller {
             if (!noCleanup) {
                 if (Directory.Exists("PhpComposerInstallerDownloads")) {
                     OS.DeleteDirectory("PhpComposerInstallerDownloads");
-                    Console.WriteLine("  * Temp könyvtár (PhpComposerInstallerDownloads) törölve.");
+                    Console.WriteLine("  * Temp directory (PhpComposerInstallerDownloads) deleted.");
                 }
             } else {
-                Console.WriteLine("  * Kihagyva");
+                Console.WriteLine("  * Skipped.");
             }
         }
 
@@ -253,21 +255,21 @@ namespace PhpComposerInstaller {
 
                 // -----------------------------------
 
-                Console.WriteLine("1. fázis: Előzetes ellenőrzés");
+                Console.WriteLine("Phase 1: Finding problems");
                 Console.WriteLine("---------");
                 HandlePriorCheck();
                 Console.WriteLine(" ");
 
                 // -----------------------------------
 
-                Console.WriteLine("2. fázis: PHP verzió kiválasztása");
+                Console.WriteLine("Phase 2: PHP release selection");
                 Console.WriteLine("---------");
                 HandlePhpReleaseSelection();
                 Console.WriteLine(" ");
 
                 // -----------------------------------
 
-                Console.WriteLine("3. fázis: Eszközök letöltése az internetről");
+                Console.WriteLine("Phase 3: Download tools from the Internet");
                 Console.WriteLine("---------");
                 HandleTempDirectory();
                 HandleDownloads();
@@ -275,46 +277,44 @@ namespace PhpComposerInstaller {
 
                 // -----------------------------------
 
-                Console.WriteLine("4. fázis: Letöltött állományok konfigurálása");
+                Console.WriteLine("Phase 4: Configure downloaded tools");
                 Console.WriteLine("---------");
                 HandleConfiguration();
                 Console.WriteLine(" ");
 
                 // -----------------------------------
 
-                Console.WriteLine("5. fázis: Konfigurált programok előkészítése, telepítése");
+                Console.WriteLine("Phase 5: Installing programs");
                 Console.WriteLine("---------");
                 HandleInstallation();
                 Console.WriteLine(" ");
 
                 // -----------------------------------
 
-                Console.WriteLine("6. fázis: Ideiglenes fájlok törlése");
+                Console.WriteLine("Phase 6: Delete temporary files");
                 Console.WriteLine("---------");
                 HandleCleanup();
                 Console.WriteLine(" ");
 
                 // -----------------------------------
 
-                Console.WriteLine("7. fázis: Teszteld le a telepítést!");
+                Console.WriteLine("Phase 7: Test your installation manually!");
                 Console.WriteLine("---------");
-                Console.WriteLine("  1.) Nyisd meg az InstallTest könyvtárban lévő version.bat fájlt, és nézd meg, hogy");
-                Console.WriteLine("      kiírja-e a PHP és a Composer verzióját, valamint azt, hogy a PHP-nál szerepel-e");
-                Console.WriteLine("      az Xdebug.");
+                Console.WriteLine("  1.) Open the \"version.bat\" file in the InstallTest directory, then make sure that");
+                Console.WriteLine("      the version number of PHP and Composer is displayed on the console.");
                 Console.WriteLine(" ");
-                Console.WriteLine("  2.) Nyisd meg az InstallTest könyvtárban lévő phpinfo.bat fájlt, ami elindít egy PHP");
-                Console.WriteLine("      szervert, illetve megnyitja azt MS Edge-ben. Ha működik, akkor valószínűleg minden");
-                Console.WriteLine("      rendben van, de ezt az oldalt bármilyen konfigurációs kérdés esetén is meg tudod");
-                Console.WriteLine("      nyitni.");
+                Console.WriteLine("  2.) Open the \"phpinfo.bat\" file in the InstallTest directory, which will start a PHP server");
+                Console.WriteLine("      and then open it in MS Edge. If this works well, the installation is probably successful.");
+                Console.WriteLine("      You can also visit this page if you want to check any PHP settings.");
                 Console.WriteLine(" ");
 
                 // -----------------------------------
 
-                Console.WriteLine(" A telepítö végzett. Nyomj meg egy gombot a kilépéshez...");
+                Console.WriteLine(" Installation is complete. Press any key to exit...");
                 Console.ReadKey();
             }
             catch (Exception ex) {
-                Console.WriteLine("HIBA.");
+                Console.WriteLine("FAILED.");
                 Console.WriteLine(ex.Message);
             }
 
