@@ -28,13 +28,13 @@ namespace PhpComposerInstaller {
 
         private static void HandleArgs(string[] args) {
             // Csak uninstall (ha van mit)
-            if (args.Contains("--uninstall")) uninstall = true;
+            if (args.Contains("-ui") || args.Contains("--uninstall")) uninstall = true;
 
             // Hagyja meg a letöltéseket, ideiglenes fájlokat
-            if (args.Contains("--no-cleanup")) noCleanup = true;
+            if (args.Contains("-nc") || args.Contains("--no-cleanup")) noCleanup = true;
 
-            if (args.Contains("--with-xdebug")) withXdebug = true;
-            if (args.Contains("--with-vc-redist")) withVCRedist = true;
+            if (args.Contains("-xd") || args.Contains("--with-xdebug")) withXdebug = true;
+            if (args.Contains("-vc") || args.Contains("--with-vc-redist")) withVCRedist = true;
         }
 
         private static void HandleUninstall() {
