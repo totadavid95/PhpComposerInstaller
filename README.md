@@ -2,7 +2,7 @@
 
 **A legfrissebb verzió az alábbi gombra kattintva tölthető le:**
 
-[![Letöltés](https://raw.githubusercontent.com/totadavid95/PhpComposerInstaller/master/images/download.png)](https://github.com/totadavid95/PhpComposerInstaller/releases/latest/download/PhpComposerInstaller.zip)
+[![Letöltés](https://img.shields.io/badge/Download%20Installer-32A852?style=for-the-badge&logoColor=white&logo=DocuSign)](https://github.com/totadavid95/PhpComposerInstaller/releases/latest/download/PhpComposerInstaller.zip)
 
 - Letöltés után csomagold ki a *.zip* fájlt, majd futtasd a `PhpComposerInstall.exe`-t. Ne futtasd Asztalról!
 - A telepítő futtatásához legalább [.NET 4.7.2](https://dotnet.microsoft.com/en-us/download/dotnet-framework/net472) szükséges (Windows 10, 11 rendszereken ez a követelmény alapból teljesül).
