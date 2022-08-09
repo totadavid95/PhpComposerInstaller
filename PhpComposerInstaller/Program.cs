@@ -111,7 +111,11 @@ namespace PhpComposerInstaller {
                 Console.WriteLine("    ATTENTION! Immediately after the selection, the installer overwrites/updates");
                 Console.WriteLine("    the currently installed PHP/Composer in the %LOCALAPPDATA%/Programs directory!");
             }
-            selectedPhpRelease = Selector.ShowSelectorMenu(phpReleases.Keys.ToArray());
+
+            var phpVersions = phpReleases.Keys.ToArray();
+            Array.Reverse(phpVersions);
+
+            selectedPhpRelease = Selector.ShowSelectorMenu(phpVersions);
             Console.WriteLine("  * Selected: " + selectedPhpRelease);
         }
 
