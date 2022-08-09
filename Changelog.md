@@ -1,18 +1,28 @@
-# Változásnapló
+# Changelog
 
-## `v1.2.1` - 2022. 02. 04.
-- Tesztelő eszközök módosítása.
-- Kapcsolódó leírások fejlesztése.
+## `v1.2.3` - 09/08/2022
+- Version selector now starts with the latest PHP.
+- New download button in README.
+- Xdebug download link detection fix.
+- Installing Xdebug and VC Redist is now optional.
+  - You can use the following switches for Xdebug/VC Redist installation: `--with-xdebug`, `--with-vc-redist`
 
-## `v1.2.0` - 2022. 02. 04.
-- PHP verzió választás a PHP hivatalos honlapján lévő támogatott verziók alapján.
-- Inkompatibilis szoftverek érzékelése.
-- Eltávolítás (uninstall) funkció.
-- CURL engedélyezése a PHP config-ban a Composer teljesítményének javításához.
-- Xdebug config javítása.
-- Automatikus Visual C++ Redistributable telepítés.
-- Checksum ellenőrzése letöltés után.
-- Részletesebb konzol kimenet.
-- Tesztelő eszközök a telepítés után (InstallTest mappa).
-- Leírás frissítése.
-- GitHub CI módosítása, Windows 2022-re állítása.
+## `v1.2.2` - 07/02/2022
+- English translation.
+
+## `v1.2.1` - 04/02/2022
+- Improve testing tools.
+- Improve descriptions.
+
+## `v1.2.0` - 04/02/2022
+- PHP version selector. (Based on PHP's official website.)
+- Detect incompatible softwares.
+- Uninstall switch: `--uninstall`
+- Enabling CURL in PHP config to improve Composer performance.
+- Xdebug config fix.
+- Automatic Visual C++ Redistributable installation.
+- Checksum-based verification after every file download.
+- More detailed console output.
+- Testing tools (InstallTest folder).
+- Update README.
+- Improve CI.
