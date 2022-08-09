@@ -15,6 +15,8 @@ namespace PhpComposerInstaller {
     internal class Program {
         private static bool uninstall = false;
         private static bool noCleanup = false;
+        private static bool withXdebug = false;
+
         private static Dictionary<string, Dictionary<string, string>> phpReleases;
         private static string selectedPhpRelease;
         private static string defaultPhpLocation = PHP.GetDefaultPhpInstallationLocation();
@@ -29,6 +31,8 @@ namespace PhpComposerInstaller {
 
             // Hagyja meg a letöltéseket, ideiglenes fájlokat
             if (args.Contains("--no-cleanup")) noCleanup = true;
+
+            if (args.Contains("--with-xdebug")) withXdebug = true;
         }
 
         private static void HandleUninstall() {
@@ -127,20 +131,22 @@ namespace PhpComposerInstaller {
                 "PhpComposerInstallerDownloads/php.zip"
             );
 
-            var xdebug = Xdebug.GetLatestPackage(selectedPhpRelease, phpReleases[selectedPhpRelease]["builtwith"]);
-            xdebugVersion = xdebug["version"];
-            Download.DownloadAndCheckFile(
-                "Downloading Xdebug for PHP " + selectedPhpRelease + " " + phpReleases[selectedPhpRelease]["builtwith"].ToUpper() + " NTS... ",
-                new Uri(xdebug["downloadlink"]),
-                xdebug["checksum"],
-                "PhpComposerInstallerDownloads/xdebug.dll"
-            );
+            if (withXdebug) {
+                var xdebug = Xdebug.GetLatestPackage(selectedPhpRelease, phpReleases[selectedPhpRelease]["builtwith"]);
+                xdebugVersion = xdebug["version"];
+                Download.DownloadAndCheckFile(
+                    "Downloading Xdebug for PHP " + selectedPhpRelease + " " + phpReleases[selectedPhpRelease]["builtwith"].ToUpper() + " NTS... ",
+                    new Uri(xdebug["downloadlink"]),
+                    xdebug["checksum"],
+                    "PhpComposerInstallerDownloads/xdebug.dll"
+                );
 
-            Download.DownloadFile(
-                "Downloading Xdebug " + xdebug["version"] + " source code... ",
-                new Uri("https://github.com/xdebug/xdebug/archive/refs/tags/" + xdebug["version"] + ".zip"),
-                "PhpComposerInstallerDownloads/xdebug_src.zip"
-            );
+                Download.DownloadFile(
+                    "Downloading Xdebug " + xdebug["version"] + " source code... ",
+                    new Uri("https://github.com/xdebug/xdebug/archive/refs/tags/" + xdebug["version"] + ".zip"),
+                    "PhpComposerInstallerDownloads/xdebug_src.zip"
+                );
+            }
 
             // Ez kell a PHP-hoz, lásd https://www.php.net/manual/en/install.windows.requirements.php
             Download.DownloadFile(
@@ -167,14 +173,16 @@ namespace PhpComposerInstaller {
             ZipFile.ExtractToDirectory("PhpComposerInstallerDownloads/php.zip", "PhpComposerInstallerDownloads/php");
             Console.WriteLine("OK.");
 
-            Console.Write("  * Extracting Xdebug configuration... ");
-            ZipFile.ExtractToDirectory("PhpComposerInstallerDownloads/xdebug_src.zip", "PhpComposerInstallerDownloads/xdebug_src");
-            File.Copy("PhpComposerInstallerDownloads/xdebug_src/xdebug-" + xdebugVersion + "/xdebug.ini", "PhpComposerInstallerDownloads/xdebug.ini");
-            Console.WriteLine("OK.");
+            if (withXdebug) {
+                Console.Write("  * Extracting Xdebug configuration... ");
+                ZipFile.ExtractToDirectory("PhpComposerInstallerDownloads/xdebug_src.zip", "PhpComposerInstallerDownloads/xdebug_src");
+                File.Copy("PhpComposerInstallerDownloads/xdebug_src/xdebug-" + xdebugVersion + "/xdebug.ini", "PhpComposerInstallerDownloads/xdebug.ini");
+                Console.WriteLine("OK.");
 
-            Console.Write("  * Copy xdebug.dll to php/ext directory... ");
-            File.Copy("PhpComposerInstallerDownloads/xdebug.dll", "PhpComposerInstallerDownloads/php/ext/php_xdebug.dll");
-            Console.WriteLine("OK.");
+                Console.Write("  * Copy xdebug.dll to php/ext directory... ");
+                File.Copy("PhpComposerInstallerDownloads/xdebug.dll", "PhpComposerInstallerDownloads/php/ext/php_xdebug.dll");
+                Console.WriteLine("OK.");
+            }
 
             Console.Write("  * Create and configure php.ini... ");
             File.Copy("PhpComposerInstallerDownloads/php/php.ini-development", "PhpComposerInstallerDownloads/php/php.ini", true);
@@ -187,15 +195,18 @@ namespace PhpComposerInstaller {
             phpIniContent = phpIniContent.Replace(";extension=openssl", "extension=openssl");
             phpIniContent = phpIniContent.Replace(";extension=pdo_mysql", "extension=pdo_mysql");
             phpIniContent = phpIniContent.Replace(";extension=pdo_sqlite", "extension=pdo_sqlite");
-            phpIniContent = phpIniContent.Replace(";extension=xsl", ";extension=xsl\nzend_extension=xdebug");
 
-            // https://xdebug.org/docs/all_settings
-            string xdebugDefaultConfig = File.ReadAllText("PhpComposerInstallerDownloads/xdebug.ini");
-            xdebugDefaultConfig = xdebugDefaultConfig.Replace(" — do not modify by hand", "");
-            xdebugDefaultConfig = xdebugDefaultConfig.Replace(";xdebug.cli_color = 0", "xdebug.cli_color = 1");
-            xdebugDefaultConfig = xdebugDefaultConfig.Replace(";xdebug.client_host = localhost", "xdebug.client_host = localhost");
-            xdebugDefaultConfig = xdebugDefaultConfig.Replace(";xdebug.client_port = 9003", "xdebug.client_port = 9003");
-            phpIniContent += "\n[xdebug]\n" + xdebugDefaultConfig;
+            if (withXdebug) {
+                phpIniContent = phpIniContent.Replace(";extension=xsl", ";extension=xsl\nzend_extension=xdebug");
+
+                // https://xdebug.org/docs/all_settings
+                string xdebugDefaultConfig = File.ReadAllText("PhpComposerInstallerDownloads/xdebug.ini");
+                xdebugDefaultConfig = xdebugDefaultConfig.Replace(" — do not modify by hand", "");
+                xdebugDefaultConfig = xdebugDefaultConfig.Replace(";xdebug.cli_color = 0", "xdebug.cli_color = 1");
+                xdebugDefaultConfig = xdebugDefaultConfig.Replace(";xdebug.client_host = localhost", "xdebug.client_host = localhost");
+                xdebugDefaultConfig = xdebugDefaultConfig.Replace(";xdebug.client_port = 9003", "xdebug.client_port = 9003");
+                phpIniContent += "\n[xdebug]\n" + xdebugDefaultConfig;
+            }
 
             File.WriteAllText("PhpComposerInstallerDownloads/php/php.ini", phpIniContent);
             Console.WriteLine("OK.");
