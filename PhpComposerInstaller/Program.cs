@@ -16,6 +16,7 @@ namespace PhpComposerInstaller {
         private static bool uninstall = false;
         private static bool noCleanup = false;
         private static bool withXdebug = false;
+        private static bool withVCRedist = false;
 
         private static Dictionary<string, Dictionary<string, string>> phpReleases;
         private static string selectedPhpRelease;
@@ -33,6 +34,7 @@ namespace PhpComposerInstaller {
             if (args.Contains("--no-cleanup")) noCleanup = true;
 
             if (args.Contains("--with-xdebug")) withXdebug = true;
+            if (args.Contains("--with-vc-redist")) withVCRedist = true;
         }
 
         private static void HandleUninstall() {
@@ -148,16 +150,18 @@ namespace PhpComposerInstaller {
                 );
             }
 
-            // Ez kell a PHP-hoz, lásd https://www.php.net/manual/en/install.windows.requirements.php
-            Download.DownloadFile(
-                "Downloading Visual C++ Redistributable " + (Environment.Is64BitOperatingSystem ? "x64" : "x86") + " installer... ",
-                new Uri(
-                    Environment.Is64BitOperatingSystem
-                        ? "https://aka.ms/vs/16/release/vc_redist.x64.exe"
-                        : "https://aka.ms/vs/16/release/vc_redist.x86.exe"
-                ),
-                "PhpComposerInstallerDownloads/vc_redist.exe"
-            );
+            if (withVCRedist) {
+                // Ez kell a PHP-hoz, lásd https://www.php.net/manual/en/install.windows.requirements.php
+                Download.DownloadFile(
+                    "Downloading Visual C++ Redistributable " + (Environment.Is64BitOperatingSystem ? "x64" : "x86") + " installer... ",
+                    new Uri(
+                        Environment.Is64BitOperatingSystem
+                            ? "https://aka.ms/vs/16/release/vc_redist.x64.exe"
+                            : "https://aka.ms/vs/16/release/vc_redist.x86.exe"
+                    ),
+                    "PhpComposerInstallerDownloads/vc_redist.exe"
+                );
+            }
 
             Download.DownloadAndCheckFile(
                 "Downloading latest Composer 2.x... ",
@@ -225,21 +229,24 @@ namespace PhpComposerInstaller {
             Console.WriteLine("  * Stop PHP processes that conflicts with this installer... ");
             PHP.KillRunningPhpProcessesByLocation(defaultPhpLocation);
 
-            Console.Write("  * Run Visual C++ Redistributable Installer... ");
-            var proc = new Process
-            {
-                StartInfo = new ProcessStartInfo
+            if (withVCRedist) {
+                Console.Write("  * Run Visual C++ Redistributable Installer... ");
+                var proc = new Process
                 {
-                    FileName = "PhpComposerInstallerDownloads/vc_redist.exe",
-                    Arguments = "/install /passive /quiet /norestart /log vc_redist.log",
-                    UseShellExecute = false,
-                    RedirectStandardOutput = true,
-                    CreateNoWindow = true
-                }
-            };
-            proc.Start();
-            proc.WaitForExit();
-            Console.WriteLine("OK.");
+                    StartInfo = new ProcessStartInfo
+                    {
+                        FileName = "PhpComposerInstallerDownloads/vc_redist.exe",
+                        Arguments = "/install /passive /quiet /norestart /log vc_redist.log",
+                        UseShellExecute = false,
+                        RedirectStandardOutput = true,
+                        CreateNoWindow = true
+                    }
+                };
+                proc.Start();
+                proc.WaitForExit();
+                Console.WriteLine("OK.");
+            }
+
             Installer.CopyToLocalAppData();
             Installer.AddToPathIfNecessary();
         }
