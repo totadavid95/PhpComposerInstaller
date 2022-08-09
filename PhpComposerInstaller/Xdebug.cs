@@ -15,10 +15,10 @@ namespace PhpComposerInstaller {
             // Kliens inicializálása, adatok lekérése
             WebClient client = new WebClient();
             client.Headers.Add(HttpRequestHeader.UserAgent, "C# app");
-            string html = client.DownloadString("https://xdebug.org/download");
+            string html = client.DownloadString("https://xdebug.org/download/historical");
 
             // 64 bites csomag - alapértelmezett:
-            string pattern = "title\\=[\\\"\\']SHA256\\:\\&nbsp\\;(?<checksum>[a-z0-9]+)[\\\"\\']\\shref=[\\\"\\']\\/files\\/(?<filename>php_xdebug-(?<version>[^-]+)-" + phpVersion + "-" + builtWith + "-nts-x86_64.dll)[\\\"\\']";
+            string pattern = "title\\=[\\\"\\']SHA256\\:\\&nbsp\\;(?<checksum>[a-z0-9]+)[\\\"\\']\\shref=[\\\"\\']\\/files\\/(?<filename>php_xdebug-(?<version>(\\d\\.\\d\\.\\d))-" + phpVersion + "-" + builtWith + "-nts-x86_64.dll)[\\\"\\']";
             // 32 bites csomag:
             if (!Environment.Is64BitOperatingSystem) {
                 //pattern = "title\\=[\\\"\\']SHA256\\:\\&nbsp\\;(?<checksum>[a-z0-9]+)[\\\"\\']\\shref=[\\\"\\']\\/files\\/(?<filename>php_xdebug-(?<version>[^-]+)-" + phpVersion + "-" + builtWith + "-nts.dll)[\\\"\\']";
