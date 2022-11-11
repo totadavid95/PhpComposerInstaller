@@ -14,10 +14,7 @@ This documentation always applies to the latest release only, previous versions 
 Table of contents:
 - [Automated PHP, Xdebug, Composer installer](#automated-php-xdebug-composer-installer)
   - [Project description](#project-description)
-  - [Downloading earlier versions](#downloading-earlier-versions)
-  - [How the installer works](#how-the-installer-works)
   - [Command line switches](#command-line-switches)
-  - [Motivation](#motivation)
   - [Frequent issues](#frequent-issues)
     - [Bug report](#bug-report)
   - [Manual installation (on Windows)](#manual-installation-on-windows)
@@ -33,13 +30,9 @@ Table of contents:
 ## Project description
 This installer was primarily created for the students of *Server-side web programming* course taught also by me at *Eötvös Loránd Univerity* in Hungary as a utility that provides a straightforward way to install and set up PHP, Xdebug and Composer under Windows.
 
-## Downloading earlier versions
-All previous versions of the installer can be downloaded on the [Releases](https://github.com/totadavid95/PhpComposerInstaller/releases) page. The `PhpComposerIntaller.zip` file contains the executable while the other two files in a given release contain the source code.
+The installer does not require administrative priviledges since it only installs for the logged in Windows user, therefore it can be executed on the lab computers. This saves us a lot of wasted time and unnecessary headaches.
 
-## How the installer works
-The installer downloads the latest releases of the aforementioned software, then installs and configures them. 
-
-If an installation has already been completed, the existing installation is removed first, and a clean installation of the latest version is performed. This mechanism can also be used to fix a broken installation or to perform an update.
+The installer downloads the latest releases of the aforementioned software, then installs and configures them. If an installation has already been completed, the existing installation is removed first, and a clean installation of the latest version is performed. This mechanism can also be used to fix a broken installation or to perform an update.
 
 The installer does not require administrative priviledges since it only installs for the logged in Windows user.
 
@@ -52,15 +45,11 @@ Available switches:
 - `--no-cleanup`
   - do not remove the downloaded / temporary files
 
-## Motivation
-In order to be able to work and practice properly in classes, a local development environment must be set up on the university lab's computers (and in many cases also on the student's own machines). Setting up this environment so that it is simple enough and still works as intended, even on lab computers (which do not have neither PHP or Composer installed by default), is not an obvious task - and even if it was, it would still take away valuable time from the class unnecessarily. Therefore we have created this installation system which only needs to be executed once and the current user can keep using the required tools on that computer in every class.
-
 ## Frequent issues
 If the installer or any of the installed software doesn't work properly, the culprit could be one of the following:
-- Some antivirus software (e.g. typically Avast) mistakenly classify one of the installation steps (usually Composer) as malware (also known as a false positive alarm). If you use such software, try suspending its protection and running the installer again. The installer is not "viral", the source code can be found here on GitHub, the build is also done here, using Actions. The whole process is transparent and secure.
-- It is possible that some kind of "fluctuation" occurred on your network and the installer not connect to one of the servers from which the programs are downloaded, or the connection was interrupted in the meantime, e.g. during download. It's worth trying again, possibly even at a later time.
-- Hibákhoz vezethet, tipikusan pl. a Tinker esetében, ha a Windows **felhasználónévben** ékezet van, hiszen ennélfogva minden útvonal ékezetes, ami az adott felhasználóhoz tartozik. Mivel a telepítő a felhasználó szintjén végzi a telepítést, ezért a telepített PHP és Composer szintén érintett. Ennek egy lehetséges megoldására [készítettem egy videót](https://www.youtube.com/watch?v=_zL3Pxnidj0).
-- Using non-English characters in your Windows **username** may lead to errors in some cases, typically when using Tinker. Since the installer performs the installation at user level, the installed PHP and Composer can also be affected. There is already [a video on fixing this issue](https://www.youtube.com/watch?v=_zL3Pxnidj0) (in Hungarian).
+- Some antivirus software mistakenly classify one of the installation steps (usually Composer) as malware (also known as a false positive alarm). If you use such software, try suspending its protection and running the installer again. The installer is not "viral", the source code can be found here on GitHub.
+- It is possible that some kind of "fluctuation" occurred on your network and the download was interruped. Try running the installer again, possibly at a later time.
+- Using non-English characters in your Windows **username** may lead to errors in some cases, typically when using Tinker. There is already [a video on fixing this issue](https://www.youtube.com/watch?v=_zL3Pxnidj0) (in Hungarian).
 
 ### Bug report
 If your issue is still unresolved after reading the above, see the [Help and support](#help-and-support) section.
@@ -72,7 +61,7 @@ The installer performs the following steps programmatically.
 - The official PHP webpage contains the currently supported versions of PHP: [https://windows.php.net/download](https://windows.php.net/download) 
 - Download the __x86 / x64 Non Thread Safe__ version of your choise (preferably the latest one). Use the x86 version on 32-bit operating systems and the x64 version for a 64-bit OS.
 - Extract the downloaded *.zip* archive.
-- PHP requires a configuration file names __php.ini__ which is not included in the archive by default. Create a duplicate of the included __php.ini-development__ (which serves as an example configuration) and rename it __php.ini__.
+- PHP requires a configuration file named __php.ini__ which is not included in the archive by default. Create a duplicate of the included __php.ini-development__ (which serves as an example configuration) and rename it __php.ini__.
 - Open __php.ini__ and perform the following changes:
   - Find the following row:  `;extension_dir = "ext"`, and remove the `;` (comment sign) from the beginning. This will make PHP look for its extensions in its own directory. (Since PHP was installed locally, it would not look for the extensions in the right place by default.)
   - Next we will need to enable some extensions which will be required to run Composer, Laravel, etc properly later. Uncomment the following lines, thereby enabling the given extensions:
@@ -92,13 +81,12 @@ Hint: copy `%LOCALAPPDATA%\Programs` to the address bar of your file explorer.
 
 ### Installing Visual C++ Redistributable
 
-The [installation requirements](https://www.php.net/manual/en/install.windows.requirements.php) specify the Visual C++ Redistributable is needed to run PHP on Windows systems. Ezért, ha a PHP az első futtatáskor "dll hibát" ír, telepítsd az OS architektúrádnak (32 vagy 64 bit) megfelelő Visual C++ runtime library-t:
-If PHP gives a "dll error" on first execution, download the appropriate (32 or 64 bit depending on your OS architechure) version of the Visual C++ runtime:
+The [installation requirements](https://www.php.net/manual/en/install.windows.requirements.php) specify the Visual C++ Redistributable is needed to run PHP on Windows systems. If PHP gives a "dll error" on first execution, download the appropriate (32 or 64 bit depending on your OS architechure) version of the Visual C++ runtime:
 - [vc_redist.x86.exe](https://aka.ms/vs/16/release/vc_redist.x86.exe) (32 bit)
 - [vc_redist.x64.exe](https://aka.ms/vs/16/release/vc_redist.x64.exe) (64 bit)
 
 ### Installing Xdebug for PHP
-- Select the Xdebug version corresponing your installed PHP version from [https://xdebug.org/download](https://xdebug.org/download) from the __Windows binaries__ section. (tartsd szem előtt, hogy x86 (32 bit) / x64 (64 bit) kell-e, a TS / NTS a Thread Safe-t / Non-Thread Safe-t jelenti a végén, az aktuális PHP verziódat és az architektúrát pedig a `php -v` parancs adja meg).
+- Select the Xdebug version corresponing your installed PHP version from [https://xdebug.org/download](https://xdebug.org/download) from the __Windows binaries__ section.
 - Download Xdebug as a file named __php_xdebug.dll__.
 - Copy the downloaded __php_xdebug.dll__ file to the __ext__ directory of your PHP installation.
 - Open __php.ini__. The ini file follows this structure:
@@ -134,21 +122,18 @@ If PHP gives a "dll error" on first execution, download the appropriate (32 or 6
 - This will make the `composer.bat` call PHP to run Composer (which is a PHP archive) forwarding the parameters as well (hence %).
 
 ### Adding the installation to the Path environment variable
-At this point the installation is almost done, but currently you can only call PHP and Composer by knowing their absolute path. Typing just `php` or `composer` to the command line will give an error since these commands to not exist.
+At this point the installation is almost done, but currently you can only call PHP and Composer by knowing their absolute path.
 
-To make `php` and `composer` simply executable from any open command line, we need to add the two folders created inside `%localappdata/Programs` to the Path environment variable. 
+To make `php` and `composer` simply callable from any open command line, we need to add the **two folders** created inside `%localappdata/Programs` to the Path environment variable.
 
 This is most easily done by typing "Edit environment variables for your account" into the Search bar. Alternatively you can press Win+R and execute `rundll32 sysdm.cpl,EditEnvironmentVariables`.
 
 It is important to note that you only need to work in the upper part of the dialog, since those are the environment variable of the __current user__, and you are not able to modify the systemwide properies on the lab machines anyway.
 
-**You'll need to exit the previously opened command prompt for the changes to take effect.** The freshly opened command lines will use the modified Path value so you'll be able to use this commands after you've done the setup.
+**You'll need to close any previously opened command prompts for the changes to take effect.**
 
 ## Testing the installed tools
-After successfully completing the operations described above, the `php` and `composer` commands should become available in the command line (you will need to re-open the previously opened ones), and you can try them like this:
-`php -v` and `composer -V`
-
-In both cases you should be able to see the version number of the installed product, and the PHP version command should also display some version information about Xdebug.
+You can test whether your installations were successful by executing `php -v` and `composer -V`. In both cases you should be able to see the version number of the installed product, and the PHP version command should also display some information about Xdebug.
 
 You may get some more details about your PHP installation by copying the following code into a PHP file (e.g *text.php*):
 ```php
@@ -164,14 +149,12 @@ You may get some more details about your PHP installation by copying the followi
 Now open a command line in the directory of the created `test.php` file (or use `cd` to get there and) and execute:  
 `php -S localhost:3000 test.php`
 
-You may now view [http://localhost:3000/](http://localhost:3000/) in a browser.
+You may now view [http://localhost:3000/](http://localhost:3000/) in a browser. This will display a through report about your PHP environment (including version number and the enabled extensions). Don't forget to close the command line. This will also stop the development server, of course.
 
-This will display a through report on PHP's data and settings, for example you can see the version number, list of enabled extensions, if Xdebug is present, etc. Don't forget to close the command line. This will also stop the development server, of course.
-
-There two tests can alse be executed using the tools included in the `InstallTest` folder of the installer.
+There two tests can also be executed using the tools included in the `InstallTest` folder of the installer.
 
 ## Manual installation (on Linux)
-Our automatic installer only works under Windows systems, but this guide may help you perform the same on Linux operating systems. The process is based on [this tutorial](https://tecadmin.net/how-to-install-php-8-on-ubuntu-20-04/) and has been tested on Xubuntu 20.04 under VirtualBox.
+Our automatic installer only works under Windows systems, but this guide may help you perform the same on Linux operating systems. The process is based on [this tutorial](https://tecadmin.net/how-to-install-php-8-on-ubuntu-20-04/) and has been tested under Xubuntu 20.04.
 
 1. Update the package repository:
    
