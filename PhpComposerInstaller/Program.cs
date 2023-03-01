@@ -1,8 +1,7 @@
-﻿// ---------------------------------------------------
-// PHP, Xdebug, Composer telepítő
-// Készítette: Tóta Dávid
-// Kapcsolat: totadavid95@inf.elte.hu
-// ---------------------------------------------------
+﻿// PHP, Xdebug, Composer installer
+// Created by: David Tota
+// Contact: totadavid95@inf.elte.hu
+// GitHub: https://github.com/totadavid95/PhpComposerInstaller
 
 using System;
 using System.Collections.Generic;
@@ -36,13 +35,16 @@ namespace PhpComposerInstaller
         /// </summary>
         private static void HandleArgs(string[] args)
         {
-            // Csak uninstall (ha van mit)
+            // Uninstall mode
             if (args.Contains("-ui") || args.Contains("--uninstall")) uninstall = true;
 
-            // Hagyja meg a letöltéseket, ideiglenes fájlokat
+            // Keep temp files
             if (args.Contains("-nc") || args.Contains("--no-cleanup")) noCleanup = true;
 
+            // Install Xdebug
             if (args.Contains("-xd") || args.Contains("--with-xdebug")) withXdebug = true;
+
+            // Install VC Redist
             if (args.Contains("-vc") || args.Contains("--with-vc-redist")) withVCRedist = true;
         }
 
