@@ -3,17 +3,28 @@ using System.ComponentModel;
 using System.Net;
 using System.Threading;
 
-namespace PhpComposerInstaller {
-    public class Downloader {
+namespace PhpComposerInstaller
+{
+    /// <summary>
+    /// Download utility class, which integrates file downloader and progress bar.
+    /// </summary>
+    public class Downloader
+    {
         private volatile bool _completed;
         private volatile ProgressBar _progressBar;
         private EventWaitHandle _waitHandle;
 
-        public Downloader(EventWaitHandle waitHandle) {
+        public Downloader(EventWaitHandle waitHandle)
+        {
             _waitHandle = waitHandle;
         }
 
-        public void DownloadFile(Uri address, string location) {
+        /// <summary>
+        /// Downloads the file from the given address to the given local destination,
+        /// and shows a progress bar in the console while downloading.
+        /// </summary>
+        public void DownloadFile(Uri address, string location)
+        {
             _completed = false;
             _progressBar = new ProgressBar();
 
@@ -24,16 +35,35 @@ namespace PhpComposerInstaller {
             client.DownloadFileAsync(address, location);
         }
 
+        /// <summary>
+        /// Returns true if the download is completed.
+        /// </summary>
         public bool DownloadCompleted { get { return _completed; } }
 
-        private void DownloadProgress(object sender, DownloadProgressChangedEventArgs e) {
+        /// <summary>
+        /// Updates the progress bar.
+        /// </summary>
+        private void DownloadProgress(object sender, DownloadProgressChangedEventArgs e)
+        {
             _progressBar.Report((double)e.ProgressPercentage / 100);
         }
 
-        private void Completed(object sender, AsyncCompletedEventArgs e) {
+        /// <summary>
+        /// Disposes the progress bar and sets the wait handle.
+        /// </summary>
+        private void Completed(object sender, AsyncCompletedEventArgs e)
+        {
             _progressBar.Dispose();
-            if (e.Cancelled) Console.WriteLine("Cancelled.");
-            else Console.WriteLine("Downloaded.");
+
+            if (e.Cancelled)
+            {
+                Console.WriteLine("Cancelled.");
+            }
+            else
+            {
+                Console.WriteLine("Downloaded.");
+            }
+
             _completed = true;
             _waitHandle.Set();
         }
