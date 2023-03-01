@@ -26,15 +26,17 @@ Table of contents:
   - [Testing the installed tools](#testing-the-installed-tools)
   - [Manual installation (on Linux)](#manual-installation-on-linux)
   - [Help and support](#help-and-support)
+  - [Contributing](#contributing)
+  - [Releasing a new version](#releasing-a-new-version)
 
 ## Project description
 This installer was primarily created for the students of *Server-side web programming* course taught also by me at *Eötvös Loránd Univerity* in Hungary as a utility that provides a straightforward way to install and set up PHP, Xdebug and Composer under Windows.
 
-The installer does not require administrative priviledges since it only installs for the logged in Windows user, therefore it can be executed on the lab computers. This saves us a lot of wasted time and unnecessary headaches.
+The installer does not require administrative privileges since it only installs for the logged in Windows user, therefore it can be executed on the lab computers. This saves us a lot of wasted time and unnecessary headaches.
 
 The installer downloads the latest releases of the aforementioned software, then installs and configures them. If an installation has already been completed, the existing installation is removed first, and a clean installation of the latest version is performed. This mechanism can also be used to fix a broken installation or to perform an update.
 
-The installer does not require administrative priviledges since it only installs for the logged in Windows user.
+The installer does not require administrative privileges since it only installs for the logged in Windows user.
 
 ## Command line switches
 The utility can optionally be called with the command line switches described below, for example `PhpComposerInstall.exe --no-cleanup`.
@@ -48,7 +50,7 @@ Available switches:
 ## Frequent issues
 If the installer or any of the installed software doesn't work properly, the culprit could be one of the following:
 - Some antivirus software mistakenly classify one of the installation steps (usually Composer) as malware (also known as a false positive alarm). If you use such software, try suspending its protection and running the installer again. The installer is not "viral", the source code can be found here on GitHub.
-- It is possible that some kind of "fluctuation" occurred on your network and the download was interruped. Try running the installer again, possibly at a later time.
+- It is possible that some kind of "fluctuation" occurred on your network and the download was interrupted. Try running the installer again, possibly at a later time.
 - Using non-English characters in your Windows **username** may lead to errors in some cases, typically when using Tinker. There is already [a video on fixing this issue](https://www.youtube.com/watch?v=_zL3Pxnidj0) (in Hungarian).
 
 ### Bug report
@@ -59,7 +61,7 @@ The installer performs the following steps programmatically.
 
 ### Installing PHP
 - The official PHP webpage contains the currently supported versions of PHP: [https://windows.php.net/download](https://windows.php.net/download) 
-- Download the __x86 / x64 Non Thread Safe__ version of your choise (preferably the latest one). Use the x86 version on 32-bit operating systems and the x64 version for a 64-bit OS.
+- Download the __x86 / x64 Non Thread Safe__ version of your choice (preferably the latest one). Use the x86 version on 32-bit operating systems and the x64 version for a 64-bit OS.
 - Extract the downloaded *.zip* archive.
 - PHP requires a configuration file named __php.ini__ which is not included in the archive by default. Create a duplicate of the included __php.ini-development__ (which serves as an example configuration) and rename it __php.ini__.
 - Open __php.ini__ and perform the following changes:
@@ -81,12 +83,12 @@ Hint: copy `%LOCALAPPDATA%\Programs` to the address bar of your file explorer.
 
 ### Installing Visual C++ Redistributable
 
-The [installation requirements](https://www.php.net/manual/en/install.windows.requirements.php) specify the Visual C++ Redistributable is needed to run PHP on Windows systems. If PHP gives a "dll error" on first execution, download the appropriate (32 or 64 bit depending on your OS architechure) version of the Visual C++ runtime:
+The [installation requirements](https://www.php.net/manual/en/install.windows.requirements.php) specify the Visual C++ Redistributable is needed to run PHP on Windows systems. If PHP gives a "dll error" on first execution, download the appropriate (32 or 64 bit depending on your OS architecture) version of the Visual C++ runtime:
 - [vc_redist.x86.exe](https://aka.ms/vs/16/release/vc_redist.x86.exe) (32 bit)
 - [vc_redist.x64.exe](https://aka.ms/vs/16/release/vc_redist.x64.exe) (64 bit)
 
 ### Installing Xdebug for PHP
-- Select the Xdebug version corresponing your installed PHP version from [https://xdebug.org/download](https://xdebug.org/download) from the __Windows binaries__ section.
+- Select the Xdebug version corresponding your installed PHP version from [https://xdebug.org/download](https://xdebug.org/download) from the __Windows binaries__ section.
 - Download Xdebug as a file named __php_xdebug.dll__.
 - Copy the downloaded __php_xdebug.dll__ file to the __ext__ directory of your PHP installation.
 - Open __php.ini__. The ini file follows this structure:
@@ -110,7 +112,7 @@ The [installation requirements](https://www.php.net/manual/en/install.windows.re
     ```
     - You may find a detailed description of all Xdebug settings in the [official documentation](https://xdebug.org/docs/all_settings).
 - Save the __php.ini__ file.
-- If a PHP process was running on the machine bound to this PHP configurating, then the process needs to be restarted in order to load the new PHP configuration.
+- If a PHP process was running on the machine bound to this PHP configuration, then the process needs to be restarted in order to load the new PHP configuration.
 
 ### Install Composer
 - Download the latest Composer v2 release be clicking here: [https://getcomposer.org/download/latest-2.x/composer.phar](https://getcomposer.org/download/latest-2.x/composer.phar)
@@ -128,7 +130,7 @@ To make `php` and `composer` simply callable from any open command line, we need
 
 This is most easily done by typing "Edit environment variables for your account" into the Search bar. Alternatively you can press Win+R and execute `rundll32 sysdm.cpl,EditEnvironmentVariables`.
 
-It is important to note that you only need to work in the upper part of the dialog, since those are the environment variable of the __current user__, and you are not able to modify the systemwide properies on the lab machines anyway.
+It is important to note that you only need to work in the upper part of the dialog, since those are the environment variable of the __current user__, and you are not able to modify the system-level properties on the lab machines anyway.
 
 **You'll need to close any previously opened command prompts for the changes to take effect.**
 
@@ -229,3 +231,21 @@ Our automatic installer only works under Windows systems, but this guide may hel
    ```
 ## Help and support
 If you have any questions about the installer, feel free to ask me and I'll gladly help (totadavid95@inf.elte.hu or Teams chat). If you have a GitHub account, you can also open an issue.
+
+## Contributing
+
+Here is a quick guide on how to contribute to this project.
+
+1. Fork the repository on GitHub.
+2. Clone your fork from GitHub to your local machine.
+3. Download the latest version of Dotnet from [here](https://dotnet.microsoft.com/en-us/download).
+4. You can use any IDE you like. I recommend the lightweight [Visual Studio Code](https://code.visualstudio.com/) with the [C# extension](https://marketplace.visualstudio.com/items?itemName=ms-vscode.csharp) installed.
+5. Make your changes.
+6. Create a build by running `dotnet build` in the root directory. This will compile the code to `PhpComposerInstaller/bin/Debug/PhpComposerInstaller.exe`.
+7. Test your changes by running the modified installer.
+8. If everything works as expected, structure your changes into commits and push them to your fork.
+9. Create a pull request on GitHub from your fork to the original repository. Describe your changes and why you think they should be merged.
+
+## Releasing a new version
+
+If you are a maintainer of this project, you can create a new release simply by pushing a new `v*` tag to the repository. GitHub Actions will automatically builds the installer from the source code and creates a new release. The release will contain the installer executable and the test files.
