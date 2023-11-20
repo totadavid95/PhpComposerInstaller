@@ -38,10 +38,11 @@ A telepítő a futtatásakor letölti az említett programok legfrissebb változ
 A telepítő opcionálisan az alábbi parancssori kapcsolókkal is meghívható, például `PhpComposerInstall.exe --no-cleanup`.
 
 Elérhető kapcsolók:
-- `--uninstall`
-  - Telepítés teljes törlése
-- `--no-cleanup`
-  - Telepítés után hagyja meg a letöltött / ideiglenes fájlokat
+
+- `--uninstall` / `-ui`: teljesen eltávolítja a telepítést, amit korábban ez a telepítő telepített
+- `--no-cleanup` / `-nc`: ne távolítása el a letöltött / ideiglenes fájlokat a telepítés után
+- `--xdebug` / `-xd`: telepíti és beállítja az Xdebug-ot
+- `--no-vc-redist` / `--nvc`: ne telepítse a VC Redistributable-t
 
 ## Gyakran előforduló problémák
 Ha a telepítő vagy a telepített szoftverek valamelyike nem működik megfelelően, akkor elképzelhető, hogy ezen okok valamelyike a felelős érte:

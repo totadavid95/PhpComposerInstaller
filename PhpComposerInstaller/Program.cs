@@ -18,9 +18,9 @@ namespace PhpComposerInstaller
     internal class Program
     {
         private static bool uninstall = false;
-        private static bool noCleanup = false;
-        private static bool withXdebug = false;
-        private static bool withVCRedist = false;
+        private static bool cleanup = true;
+        private static bool installXdebug = false;
+        private static bool installVCRedist = true;
 
         private static Dictionary<string, Dictionary<string, string>> phpReleases;
         private static string selectedPhpRelease;
@@ -39,13 +39,13 @@ namespace PhpComposerInstaller
             if (args.Contains("-ui") || args.Contains("--uninstall")) uninstall = true;
 
             // Keep temp files
-            if (args.Contains("-nc") || args.Contains("--no-cleanup")) noCleanup = true;
+            if (args.Contains("-nc") || args.Contains("--no-cleanup")) cleanup = false;
 
             // Install Xdebug
-            if (args.Contains("-xd") || args.Contains("--with-xdebug")) withXdebug = true;
+            if (args.Contains("-xd") || args.Contains("--xdebug")) installXdebug = true;
 
             // Install VC Redist
-            if (args.Contains("-vc") || args.Contains("--with-vc-redist")) withVCRedist = true;
+            if (args.Contains("-nvc") || args.Contains("--no-vc-redist")) installVCRedist = false;
         }
 
         /// <summary>
@@ -178,7 +178,7 @@ namespace PhpComposerInstaller
                 "PhpComposerInstallerDownloads/php.zip"
             );
 
-            if (withXdebug)
+            if (installXdebug)
             {
                 var xdebug = Xdebug.GetLatestPackage(selectedPhpRelease, phpReleases[selectedPhpRelease]["builtwith"]);
                 xdebugVersion = xdebug["version"];
@@ -196,7 +196,7 @@ namespace PhpComposerInstaller
                 );
             }
 
-            if (withVCRedist)
+            if (installVCRedist)
             {
                 // This is required for PHP, see https://www.php.net/manual/en/install.windows.requirements.php
                 Download.DownloadFile(
@@ -228,7 +228,7 @@ namespace PhpComposerInstaller
             ZipFile.ExtractToDirectory("PhpComposerInstallerDownloads/php.zip", "PhpComposerInstallerDownloads/php");
             Console.WriteLine("OK.");
 
-            if (withXdebug)
+            if (installXdebug)
             {
                 Console.Write("  * Extracting Xdebug configuration... ");
                 ZipFile.ExtractToDirectory("PhpComposerInstallerDownloads/xdebug_src.zip", "PhpComposerInstallerDownloads/xdebug_src");
@@ -259,7 +259,7 @@ namespace PhpComposerInstaller
             // but from PHP 8.2 we need to enable it manually.
             phpIniContent = phpIniContent.Replace(";extension=zip", "extension=zip");
 
-            if (withXdebug)
+            if (installXdebug)
             {
                 phpIniContent = phpIniContent.Replace(";extension=xsl", ";extension=xsl\nzend_extension=xdebug");
 
@@ -295,7 +295,7 @@ namespace PhpComposerInstaller
             Console.WriteLine("  * Stop PHP processes that conflicts with this installer... ");
             PHP.KillRunningPhpProcessesByLocation(defaultPhpLocation);
 
-            if (withVCRedist)
+            if (installVCRedist)
             {
                 Console.Write("  * Run Visual C++ Redistributable Installer... ");
                 var proc = new Process
@@ -324,7 +324,7 @@ namespace PhpComposerInstaller
         /// </summary>
         private static void HandleCleanup()
         {
-            if (!noCleanup)
+            if (cleanup)
             {
                 if (Directory.Exists("PhpComposerInstallerDownloads"))
                 {

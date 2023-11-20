@@ -42,10 +42,11 @@ The installer does not require administrative privileges since it only installs 
 The utility can optionally be called with the command line switches described below, for example `PhpComposerInstall.exe --no-cleanup`.
 
 Available switches:
-- `--uninstall`
-  - perform an uninstall without any re-installation
-- `--no-cleanup`
-  - do not remove the downloaded / temporary files
+
+- `--uninstall` / `-ui`: completely remove the installation that was previously installed by this installer
+- `--no-cleanup` / `-nc`: do not remove the downloaded / temporary files after installation
+- `--xdebug` / `-xd`: install and configure Xdebug
+- `--no-vc-redist` / `--nvc`: do not install VC Redistributable
 
 ## Frequent issues
 If the installer or any of the installed software doesn't work properly, the culprit could be one of the following:
