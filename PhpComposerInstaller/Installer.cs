@@ -8,118 +8,154 @@ namespace PhpComposerInstaller
     /// </summary>
     internal class Installer
     {
+        private static readonly string LocalAppDataFolder = Environment.GetEnvironmentVariable("LocalAppData");
+        private static readonly string ProgramsFolder = Path.Combine(LocalAppDataFolder, "Programs");
+
+        private static readonly string PhpInstallationPath = Path.Combine(ProgramsFolder, "php");
+        private static readonly string ComposerInstallationPath = Path.Combine(ProgramsFolder, "composer");
+
         /// <summary>
-        /// Copies the downloaded application files to the local app data folder (Installation).
+        /// Copies the downloaded files to the local app data folder and removes the previous installation if it exists.
         /// </summary>
-        public static void CopyToLocalAppData()
+        /// <param name="sourceFolder">The source folder containing the downloaded files.</param>
+        /// <param name="installationPath">The installation path for the program.</param>
+        /// <param name="programName">The name of the program being installed.</param>
+        public static void CopyToAndRemoveIfExists(string sourceFolder, string installationPath, string programName)
         {
-            string localAppDataFolder = Environment.GetEnvironmentVariable("LocalAppData");
-            string programsFolder = localAppDataFolder + @"\Programs";
-            if (!Directory.Exists(programsFolder))
+            // Create the Programs folder if it does not exist.
+            if (!Directory.Exists(ProgramsFolder))
             {
-                Directory.CreateDirectory(programsFolder);
+                Directory.CreateDirectory(ProgramsFolder);
             }
 
-            // PHP
-            if (Directory.Exists(programsFolder + @"\php"))
+            // Remove the previous installation if it exists.
+            if (Directory.Exists(installationPath))
             {
-                OS.DeleteDirectory(programsFolder + @"\php");
-                Console.WriteLine("  * The previously installed PHP has been successfully uninstalled.");
+                OS.DeleteDirectory(installationPath);
+                Console.WriteLine($"  * The previously installed {programName} has been successfully uninstalled.");
             }
 
-            // Composer
-            if (Directory.Exists(programsFolder + @"\composer"))
-            {
-                OS.DeleteDirectory(programsFolder + @"\composer");
-                Console.WriteLine("  * The previously installed Composer has been successfully uninstalled.");
-            }
-            OS.DirectoryCopy("PhpComposerInstallerDownloads/php", programsFolder + @"\php", true);
-            Console.WriteLine("  * PHP has been successfully installed.");
-            OS.DirectoryCopy("PhpComposerInstallerDownloads/composer", programsFolder + @"\composer", true);
-            Console.WriteLine("  * Composer has been successfully installed.");
+            // Copy the downloaded files to the local app data folder.
+            OS.DirectoryCopy(Path.Combine("PhpComposerInstallerDownloads", sourceFolder), installationPath, true);
+            Console.WriteLine($"  * {programName} has been successfully installed.");
         }
 
         /// <summary>
-        /// Removes the downloaded files from the local app data folder if they exist (Uninstallation).
+        /// Removes the program files from the local app data folder if they exist.
         /// </summary>
-        public static void RemoveFromLocalAppData()
+        /// <param name="installationPath">The installation path for the program.</param>
+        /// <param name="programName">The name of the program being uninstalled.</param>
+        public static void RemoveFromLocalAppData(string installationPath, string programName)
         {
-            string localAppDataFolder = Environment.GetEnvironmentVariable("LocalAppData");
-            string programsFolder = localAppDataFolder + @"\Programs";
-
-            // PHP
-            if (Directory.Exists(programsFolder + @"\php"))
+            if (Directory.Exists(installationPath))
             {
-                OS.DeleteDirectory(programsFolder + @"\php");
-                Console.WriteLine("  * PHP program files have been successfully removed.");
+                OS.DeleteDirectory(installationPath);
+                Console.WriteLine($"  * {programName} program files have been successfully removed.");
             }
             else
             {
-                Console.WriteLine("  * PHP program files not found, maybe PHP is not installed.");
-            }
-
-            // Composer
-            if (Directory.Exists(programsFolder + @"\composer"))
-            {
-                OS.DeleteDirectory(programsFolder + @"\composer");
-                Console.WriteLine("  * Composer program files have been successfully removed.");
-            }
-            else
-            {
-                Console.WriteLine("  * Composer program files not found, maybe PHP is not installed.");
+                Console.WriteLine($"  * {programName} program files not found, maybe {programName} is not installed.");
             }
         }
 
         /// <summary>
-        /// Adds the local app data folder to the PATH environment variable if it is not already added.
+        /// Adds the program to the PATH environment variable if it is not already added.
         /// </summary>
-        public static void AddToPathIfNecessary()
+        /// <param name="installationPath">The installation path for the program.</param>
+        /// <param name="programName">The name of the program being added to the PATH.</param>
+        public static void AddToPathIfNecessary(string installationPath, string programName)
         {
-            // PHP
-            if (OS.AddToCurrentUserPath(Environment.GetEnvironmentVariable("LocalAppData") + @"\Programs\php"))
+            if (OS.AddToCurrentUserPath(installationPath))
             {
-                Console.WriteLine("  * PHP was successfully added to the PATH environment variable.");
+                Console.WriteLine($"  * {programName} was successfully added to the PATH environment variable.");
             }
             else
             {
-                Console.WriteLine("  * PHP is already added to the PATH environment variable.");
-            }
-
-            // Composer
-            if (OS.AddToCurrentUserPath(Environment.GetEnvironmentVariable("LocalAppData") + @"\Programs\composer"))
-            {
-                Console.WriteLine("  * Composer was successfully added to the PATH environment variable.");
-            }
-            else
-            {
-                Console.WriteLine("  * Composer is already added to the PATH environment variable.");
+                Console.WriteLine($"  * {programName} is already added to the PATH environment variable.");
             }
         }
 
         /// <summary>
-        /// Removes the local app data folder from the PATH environment variable if it is already added.
+        /// Removes the program from the PATH environment variable if it is added.
         /// </summary>
-        public static void RemoveFromPathIfNecessary()
+        /// <param name="installationPath">The installation path for the program.</param>
+        /// <param name="programName">The name of the program being removed from the PATH.</param>
+        public static void RemoveFromPathIfNecessary(string installationPath, string programName)
         {
-            // PHP
-            if (OS.RemoveFromCurrentUserPath(Environment.GetEnvironmentVariable("LocalAppData") + @"\Programs\php"))
+            if (OS.RemoveFromCurrentUserPath(installationPath))
             {
-                Console.WriteLine("  * PHP was successfully removed from the PATH environment variable.");
+                Console.WriteLine($"  * {programName} was successfully removed from the PATH environment variable.");
             }
             else
             {
-                Console.WriteLine("  * PHP is not included in the PATH environment variable.");
+                Console.WriteLine($"  * {programName} is not included in the PATH environment variable.");
             }
+        }
 
-            // Composer
-            if (OS.RemoveFromCurrentUserPath(Environment.GetEnvironmentVariable("LocalAppData") + @"\Programs\composer"))
-            {
-                Console.WriteLine("  * Composer was successfully removed from the PATH environment variable.");
-            }
-            else
-            {
-                Console.WriteLine("  * Composer is not included in the PATH environment variable.");
-            }
+        /// <summary>
+        /// Copies the downloaded PHP files to the local app data folder and removes the previous installation if it
+        /// exists.
+        /// </summary>
+        public static void CopyPhpToLocalAppData()
+        {
+            CopyToAndRemoveIfExists("php", PhpInstallationPath, "PHP");
+        }
+
+        /// <summary>
+        /// Copies the downloaded Composer files to the local app data folder and removes the previous installation if
+        /// it exists.
+        /// </summary>
+        public static void CopyComposerToLocalAppData()
+        {
+            CopyToAndRemoveIfExists("composer", ComposerInstallationPath, "Composer");
+        }
+
+        /// <summary>
+        /// Removes the PHP files from the local app data folder, if they exist.
+        /// </summary>
+        public static void RemovePhpFromLocalAppData()
+        {
+            RemoveFromLocalAppData(PhpInstallationPath, "PHP");
+        }
+
+        /// <summary>
+        /// Removes the Composer files from the local app data folder, if they exist.
+        /// </summary>
+        public static void RemoveComposerFromLocalAppData()
+        {
+            RemoveFromLocalAppData(ComposerInstallationPath, "Composer");
+        }
+
+        /// <summary>
+        /// Adds PHP to the PATH environment variable if it is not already added.
+        /// </summary>
+        public static void AddPhpToPathIfNecessary()
+        {
+            AddToPathIfNecessary(PhpInstallationPath, "PHP");
+        }
+
+        /// <summary>
+        /// Adds Composer to the PATH environment variable if it is not already added.
+        /// </summary>
+        public static void AddComposerToPathIfNecessary()
+        {
+            AddToPathIfNecessary(ComposerInstallationPath, "Composer");
+        }
+
+        /// <summary>
+        /// Removes PHP from the PATH environment variable if it is added.
+        /// </summary>
+        public static void RemovePhpFromPathIfNecessary()
+        {
+            RemoveFromPathIfNecessary(PhpInstallationPath, "PHP");
+        }
+
+        /// <summary>
+        /// Removes Composer from the PATH environment variable if it is added.
+        /// </summary>
+        public static void RemoveComposerFromPathIfNecessary()
+        {
+            RemoveFromPathIfNecessary(ComposerInstallationPath, "Composer");
         }
     }
 }
