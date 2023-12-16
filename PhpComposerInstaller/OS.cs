@@ -36,15 +36,25 @@ namespace PhpComposerInstaller {
         /// Adds the given path to the user's Path environment variable (if it's not already there).
         /// </summary>
         public static bool AddToCurrentUserPath(string path) {
-            var currentPathVariable = Environment.GetEnvironmentVariable("Path", EnvironmentVariableTarget.User);
+            var currentPath = Environment.GetEnvironmentVariable("Path", EnvironmentVariableTarget.User);
 
-            // If we get null for the current Path variable, or the path is already in it, so
-            // at this point we can finish the method.
-            if (currentPathVariable == null || currentPathVariable.ToLower().Contains(path.ToLower())) return false;
+            // If we get null for the current Path variable, or the path to add is already in the Path,
+            // then there is no need to continue.
+            if (currentPath == null || currentPath.ToLower().Contains(path.ToLower())) {
+                return false;
+            }
 
-            var updatedPathVariable = currentPathVariable + Path.PathSeparator.ToString() + path;
-            Environment.SetEnvironmentVariable("Path", updatedPathVariable, EnvironmentVariableTarget.User);
+            string updatedPath;
+            string currentPathTrimmed = currentPath.Trim();
 
+            // Do not add extra separator characters if the current Path is empty or already ends with a separator.
+            if (currentPathTrimmed == "" || currentPathTrimmed.EndsWith(Path.PathSeparator.ToString())) {
+                updatedPath = currentPathTrimmed + path;
+            } else {
+                updatedPath = currentPathTrimmed + Path.PathSeparator.ToString() + path;
+            }
+
+            Environment.SetEnvironmentVariable("Path", updatedPath, EnvironmentVariableTarget.User);
             return true;
         }
 
@@ -52,13 +62,13 @@ namespace PhpComposerInstaller {
         /// Removes the given path from the user's Path environment variable (if it's there).
         /// </summary>
         public static bool RemoveFromCurrentUserPath(string pathToRemove) {
-            var currentPathVariable = Environment.GetEnvironmentVariable("Path", EnvironmentVariableTarget.User);
+            var currentPath = Environment.GetEnvironmentVariable("Path", EnvironmentVariableTarget.User);
 
             // If we get null for the current Path variable, or there is no match for the path
             // to remove, then there is no need to continue.
             if (
-                currentPathVariable == null ||
-                currentPathVariable.IndexOf(pathToRemove, StringComparison.CurrentCultureIgnoreCase) == -1
+                currentPath == null ||
+                currentPath.IndexOf(pathToRemove, StringComparison.CurrentCultureIgnoreCase) == -1
             ) {
                 return false;
             }
@@ -66,19 +76,15 @@ namespace PhpComposerInstaller {
             // We need to split the Path variable into its parts (or paths), using the standard
             // separator character (;), and then we need to filter out the paths that match the
             // path to remove, ignoring case sensitivity.
-            var currentPathSplitted = currentPathVariable.Split(Path.PathSeparator);
+            var currentPathSplitted = currentPath.Split(Path.PathSeparator);
 
             var currentPathFiltered = currentPathSplitted.Where(
                 path => !path.Equals(pathToRemove, StringComparison.CurrentCultureIgnoreCase)
             );
 
-            var updatedPathVariable = string.Join(
-                Path.PathSeparator.ToString(),
-                currentPathFiltered
-            );
+            var updatedPath = string.Join(Path.PathSeparator.ToString(), currentPathFiltered);
 
-            Environment.SetEnvironmentVariable("Path", updatedPathVariable, EnvironmentVariableTarget.User);
-
+            Environment.SetEnvironmentVariable("Path", updatedPath, EnvironmentVariableTarget.User);
             return true;
         }
 
