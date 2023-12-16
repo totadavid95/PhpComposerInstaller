@@ -31,7 +31,7 @@ namespace PhpComposerInstaller {
             }
 
             // Copy the downloaded files to the local app data folder.
-            OS.DirectoryCopy(Path.Combine("PhpComposerInstallerDownloads", sourceFolder), installationPath, true);
+            OS.DirectoryCopy(Path.Combine(Constants.TempDirectory, sourceFolder), installationPath, true);
             Console.WriteLine($"  * {programName} has been successfully installed.");
         }
 

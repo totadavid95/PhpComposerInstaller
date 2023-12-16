@@ -70,7 +70,10 @@ namespace PhpComposerInstaller {
         /// Generates the composer.bat file in the given location.
         /// </summary>
         public static void GenerateComposerBatchFile() {
-            File.WriteAllText("PhpComposerInstallerDownloads/composer/composer.bat", "@php \"%~dp0composer.phar\" %*\n");
+            File.WriteAllText(
+                Path.Combine(Constants.TempDirectory, "composer", "composer.bat"),
+                "@php \"%~dp0composer.phar\" %*\n"
+            );
         }
     }
 }

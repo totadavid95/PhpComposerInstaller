@@ -137,13 +137,16 @@ namespace PhpComposerInstaller {
         /// Handles the creation of the temporary directory.
         /// </summary>
         private static void HandleTempDirectory() {
-            if (Directory.Exists("PhpComposerInstallerDownloads")) {
-                OS.DeleteDirectory("PhpComposerInstallerDownloads");
-                Console.WriteLine("  * Temp directory (PhpComposerInstallerDownloads) deleted.");
+            if (Directory.Exists(Constants.TempDirectory)) {
+                OS.DeleteDirectory(Constants.TempDirectory);
+                Console.WriteLine($"  * Temp directory ({Constants.TempDirectory}) deleted.");
             }
-            Directory.CreateDirectory("PhpComposerInstallerDownloads");
-            Directory.CreateDirectory("PhpComposerInstallerDownloads/composer");
-            Console.WriteLine("  * Temp directory (PhpComposerInstallerDownloads) created.");
+
+            Directory.CreateDirectory(Constants.TempDirectory);
+
+            string composerDir = Path.Combine(Constants.TempDirectory, "composer");
+            Directory.CreateDirectory(composerDir);
+            Console.WriteLine($"  * Temp directory ({composerDir}) created.");
         }
 
         /// <summary>
@@ -154,7 +157,7 @@ namespace PhpComposerInstaller {
                 "Downloading PHP " + selectedPhpRelease + "... ",
                 new Uri(phpReleases[selectedPhpRelease]["downloadlink"]),
                 phpReleases[selectedPhpRelease]["checksum"],
-                "PhpComposerInstallerDownloads/php.zip"
+                Path.Combine(Constants.TempDirectory, "php.zip")
             );
 
             if (optionHandler.IsOptionEnabled("xdebug")) {
@@ -164,13 +167,13 @@ namespace PhpComposerInstaller {
                     "Downloading Xdebug for PHP " + selectedPhpRelease + " " + phpReleases[selectedPhpRelease]["builtwith"].ToUpper() + " NTS... ",
                     new Uri(xdebug["downloadlink"]),
                     xdebug["checksum"],
-                    "PhpComposerInstallerDownloads/xdebug.dll"
+                    Path.Combine(Constants.TempDirectory, "xdebug.dll")
                 );
 
                 Download.DownloadFile(
                     "Downloading Xdebug " + xdebug["version"] + " source code... ",
                     new Uri("https://github.com/xdebug/xdebug/archive/refs/tags/" + xdebug["version"] + ".zip"),
-                    "PhpComposerInstallerDownloads/xdebug_src.zip"
+                    Path.Combine(Constants.TempDirectory, "xdebug_src.zip")
                 );
             }
 
@@ -183,7 +186,7 @@ namespace PhpComposerInstaller {
                             ? "https://aka.ms/vs/16/release/vc_redist.x64.exe"
                             : "https://aka.ms/vs/16/release/vc_redist.x86.exe"
                     ),
-                    "PhpComposerInstallerDownloads/vc_redist.exe"
+                    Path.Combine(Constants.TempDirectory, "vc_redist.exe")
                 );
             }
 
@@ -192,7 +195,7 @@ namespace PhpComposerInstaller {
                     "Downloading latest Composer 2.x... ",
                     new Uri(Composer.GetDownloadLinkForLatestVersion()),
                     Composer.GetChecksumForLatestVersion(),
-                    "PhpComposerInstallerDownloads/composer.phar"
+                    Path.Combine(Constants.TempDirectory, "composer.phar")
                 );
             }
         }
@@ -203,24 +206,40 @@ namespace PhpComposerInstaller {
         private static void HandleConfiguration() {
             // PHP
             Console.Write("  * Extracting PHP program files... ");
-            ZipFile.ExtractToDirectory("PhpComposerInstallerDownloads/php.zip", "PhpComposerInstallerDownloads/php");
+            ZipFile.ExtractToDirectory(
+                Path.Combine(Constants.TempDirectory, "php.zip"),
+                Path.Combine(Constants.TempDirectory, "php")
+            );
             Console.WriteLine("OK.");
 
             if (optionHandler.IsOptionEnabled("xdebug")) {
                 Console.Write("  * Extracting Xdebug configuration... ");
-                ZipFile.ExtractToDirectory("PhpComposerInstallerDownloads/xdebug_src.zip", "PhpComposerInstallerDownloads/xdebug_src");
-                File.Copy("PhpComposerInstallerDownloads/xdebug_src/xdebug-" + xdebugVersion + "/xdebug.ini", "PhpComposerInstallerDownloads/xdebug.ini");
+                ZipFile.ExtractToDirectory(
+                    Path.Combine(Constants.TempDirectory, "xdebug_src.zip"),
+                    Path.Combine(Constants.TempDirectory, "xdebug_src")
+                );
+                File.Copy(
+                    Path.Combine(Constants.TempDirectory, "xdebug_src", $"xdebug-{xdebugVersion}", "xdebug.ini"),
+                    Path.Combine(Constants.TempDirectory, "xdebug.ini")
+                );
                 Console.WriteLine("OK.");
 
                 Console.Write("  * Copy xdebug.dll to php/ext directory... ");
-                File.Copy("PhpComposerInstallerDownloads/xdebug.dll", "PhpComposerInstallerDownloads/php/ext/php_xdebug.dll");
+                File.Copy(
+                    Path.Combine(Constants.TempDirectory, "xdebug.dll"),
+                    Path.Combine(Constants.TempDirectory, "php", "ext", "php_xdebug.dll")
+                );
                 Console.WriteLine("OK.");
             }
 
             Console.Write("  * Create and configure php.ini... ");
-            File.Copy("PhpComposerInstallerDownloads/php/php.ini-development", "PhpComposerInstallerDownloads/php/php.ini", true);
+            File.Copy(
+                Path.Combine(Constants.TempDirectory, "php", "php.ini-development"),
+                Path.Combine(Constants.TempDirectory, "php", "php.ini"),
+                true
+            );
 
-            string phpIniContent = File.ReadAllText("PhpComposerInstallerDownloads/php/php.ini");
+            string phpIniContent = File.ReadAllText(Path.Combine(Constants.TempDirectory, "php", "php.ini"));
             phpIniContent = phpIniContent.Replace(";extension_dir = \"ext\"", "extension_dir = \"ext\"");
             phpIniContent = phpIniContent.Replace(";extension=curl", "extension=curl");
             phpIniContent = phpIniContent.Replace(";extension=fileinfo", "extension=fileinfo");
@@ -240,7 +259,7 @@ namespace PhpComposerInstaller {
                 phpIniContent = phpIniContent.Replace(";extension=xsl", ";extension=xsl\nzend_extension=xdebug");
 
                 // See https://xdebug.org/docs/all_settings
-                string xdebugDefaultConfig = File.ReadAllText("PhpComposerInstallerDownloads/xdebug.ini");
+                string xdebugDefaultConfig = File.ReadAllText(Path.Combine(Constants.TempDirectory, "xdebug.ini"));
                 xdebugDefaultConfig = xdebugDefaultConfig.Replace(" — do not modify by hand", "");
                 xdebugDefaultConfig = xdebugDefaultConfig.Replace(";xdebug.cli_color = 0", "xdebug.cli_color = 1");
                 xdebugDefaultConfig = xdebugDefaultConfig.Replace(";xdebug.client_host = localhost", "xdebug.client_host = localhost");
@@ -248,13 +267,16 @@ namespace PhpComposerInstaller {
                 phpIniContent += "\n[xdebug]\n" + xdebugDefaultConfig;
             }
 
-            File.WriteAllText("PhpComposerInstallerDownloads/php/php.ini", phpIniContent);
+            File.WriteAllText(Path.Combine(Constants.TempDirectory, "php", "php.ini"), phpIniContent);
             Console.WriteLine("OK.");
 
             // Composer
             if (optionHandler.IsOptionEnabled("composer")) {
                 Console.Write("  * Copy composer.phar to the composer directory... ");
-                File.Copy("PhpComposerInstallerDownloads/composer.phar", "PhpComposerInstallerDownloads/composer/composer.phar");
+                File.Copy(
+                    Path.Combine(Constants.TempDirectory, "composer.phar"),
+                    Path.Combine(Constants.TempDirectory, "composer", "composer.phar")
+                );
                 Console.WriteLine("OK.");
 
                 Console.Write("  * Create runnable .bat file for Composer... ");
@@ -276,7 +298,7 @@ namespace PhpComposerInstaller {
                 Console.Write("  * Run Visual C++ Redistributable Installer... ");
                 var proc = new Process {
                     StartInfo = new ProcessStartInfo {
-                        FileName = "PhpComposerInstallerDownloads/vc_redist.exe",
+                        FileName = Path.Combine(Constants.TempDirectory, "vc_redist.exe"),
                         Arguments = "/install /passive /quiet /norestart /log vc_redist.log",
                         UseShellExecute = false,
                         RedirectStandardOutput = true,
@@ -303,9 +325,9 @@ namespace PhpComposerInstaller {
         /// </summary>
         private static void HandleCleanup() {
             if (optionHandler.IsOptionEnabled("cleanup")) {
-                if (Directory.Exists("PhpComposerInstallerDownloads")) {
-                    OS.DeleteDirectory("PhpComposerInstallerDownloads");
-                    Console.WriteLine("  * Temp directory (PhpComposerInstallerDownloads) deleted.");
+                if (Directory.Exists(Constants.TempDirectory)) {
+                    OS.DeleteDirectory(Constants.TempDirectory);
+                    Console.WriteLine($"  * Temp directory ({Constants.TempDirectory}) deleted.");
                 }
             } else {
                 Console.WriteLine("  * Skipped.");
