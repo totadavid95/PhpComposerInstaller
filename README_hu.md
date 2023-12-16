@@ -35,14 +35,12 @@ A telepítő **nem igényel rendszergazdai** jogokat, mivel csak az aktuális Wi
 A telepítő a futtatásakor letölti az említett programok legfrissebb változatait, és telepíti, majd beállítja őket. Ha végeztél már korábban telepítést, akkor először a meglévő telepítés törlődik, és a legfrissebb verziókkal egy tiszta telepítés játszódik le. Ez használható hibás telepítés javítására vagy a programok frissítésére is.
 
 ## Parancssori kapcsolók
-A telepítő opcionálisan az alábbi parancssori kapcsolókkal is meghívható, például `PhpComposerInstall.exe --no-cleanup`.
 
-Elérhető kapcsolók:
+Az elérhető kapcsolók megtekintéséhez futtasd a telepítőt a `--help` kapcsolóval:
 
-- `--uninstall` / `-ui`: teljesen eltávolítja a telepítést, amit korábban ez a telepítő telepített
-- `--no-cleanup` / `-nc`: ne távolítása el a letöltött / ideiglenes fájlokat a telepítés után
-- `--xdebug` / `-xd`: telepíti és beállítja az Xdebug-ot
-- `--no-vc-redist` / `--nvc`: ne telepítse a VC Redistributable-t
+```shell
+PhpComposerInstall.exe --help
+```
 
 ## Gyakran előforduló problémák
 Ha a telepítő vagy a telepített szoftverek valamelyike nem működik megfelelően, akkor elképzelhető, hogy ezen okok valamelyike a felelős érte:

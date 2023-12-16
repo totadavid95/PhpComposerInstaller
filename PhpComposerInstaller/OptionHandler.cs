@@ -137,6 +137,7 @@ namespace PhpComposerInstaller {
             }
 
             Console.WriteLine($"  --{"help",-12} Prints this help message");
+            Console.WriteLine($"  --{"version",-12} Prints the version of this tool");
             Console.WriteLine(" ");
             Console.WriteLine("Examples:");
             Console.WriteLine($"  '{tool} --no-composer' is installs PHP but not Composer");
