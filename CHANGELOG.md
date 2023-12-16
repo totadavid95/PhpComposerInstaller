@@ -4,14 +4,23 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog][keepachangelog], and this project adheres to [Semantic Versioning][semver].
 
-## [1.2.5] - 2023-11-20
+## [1.2.5] - 2023-12-16
+
+### Added
+
+- Ability to get the installer version with `--version` switch.
 
 ### Changed
 
+- Reworked command line option handling.
+- Toggleable Composer installation.
 - Installing Visual C++ Redistributable is now enabled by default to prevent errors when running PHP.
-- `--with-vc-redist` switch is now deprecated. Use `--no-vc-redist` if you want to disable installing VC C++
-  Redistributable.
-- `--with-xdebug` switch is renamed to `--xdebug`.
+- Do not allow running the installer when another instance is already running.
+- Code refactoring.
+
+### Fixed
+
+- Always waits for key press after the installer is finished.
 
 ## [1.2.4] - 2023-03-01
 
