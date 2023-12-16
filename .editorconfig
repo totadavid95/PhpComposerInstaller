@@ -1,0 +1,18 @@
+root = true
+
+[*.{md,cs}]
+charset = utf-8
+end_of_line = lf
+indent_style = space
+insert_final_newline = true
+
+# https://learn.microsoft.com/en-us/dotnet/fundamentals/code-analysis/style-rules/csharp-formatting-options
+[*.cs]
+indent_size = 4
+csharp_new_line_before_open_brace = none
+csharp_new_line_before_else = false
+csharp_new_line_before_catch = false
+csharp_new_line_before_finally = false
+csharp_new_line_before_members_in_object_initializers = false
+csharp_new_line_before_members_in_anonymous_types = true
+csharp_new_line_between_query_expression_clauses = true
