@@ -17,11 +17,6 @@ namespace PhpComposerInstaller
     /// </summary>
     internal class Program
     {
-        private static bool uninstall = false;
-        private static bool cleanup = true;
-        private static bool installXdebug = false;
-        private static bool installVCRedist = true;
-
         private static Dictionary<string, Dictionary<string, string>> phpReleases;
         private static string selectedPhpRelease;
         private static string defaultPhpLocation = PHP.GetDefaultPhpInstallationLocation();
@@ -31,22 +26,21 @@ namespace PhpComposerInstaller
         private static bool composerAlreadyInstalled = false;
 
         /// <summary>
-        /// Sets program configuration based on the given arguments.
+        /// The dictionary of command-line options with their default values and descriptions.
         /// </summary>
-        private static void HandleArgs(string[] args)
+        private static readonly Dictionary<string, Option> options = new Dictionary<string, Option>()
         {
-            // Uninstall mode
-            if (args.Contains("-ui") || args.Contains("--uninstall")) uninstall = true;
+            { "uninstall",  new Option(value: false,    description: "Uninstall PHP and Composer from the local AppData directory") },
+            { "cleanup",    new Option(value: true,     description: "Delete the temporary files after installation") },
+            { "composer",   new Option(value: true,     description: "Install Composer") },
+            { "xdebug",     new Option(value: false,    description: "Install Xdebug") },
+            { "vc-redist",  new Option(value: false,    description: "Install Visual C++ Redistributable") }
+        };
 
-            // Keep temp files
-            if (args.Contains("-nc") || args.Contains("--no-cleanup")) cleanup = false;
-
-            // Install Xdebug
-            if (args.Contains("-xd") || args.Contains("--xdebug")) installXdebug = true;
-
-            // Install VC Redist
-            if (args.Contains("-nvc") || args.Contains("--no-vc-redist")) installVCRedist = false;
-        }
+        /// <summary>
+        /// The option handler instance.
+        /// </summary>
+        private static OptionHandler optionHandler;
 
         /// <summary>
         /// Uninstalls previously installed PHP and Composer, if they are installed with this tool.
@@ -55,8 +49,11 @@ namespace PhpComposerInstaller
             Console.WriteLine("Phase 1: Uninstalling");
             Console.WriteLine("---------");
 
-            Installer.RemoveFromLocalAppData();
-            Installer.RemoveFromPathIfNecessary();
+            Installer.RemovePhpFromLocalAppData();
+            Installer.RemovePhpFromPathIfNecessary();
+
+            Installer.RemoveComposerFromLocalAppData();
+            Installer.RemoveComposerFromPathIfNecessary();
         }
 
         /// <summary>
@@ -178,7 +175,7 @@ namespace PhpComposerInstaller
                 "PhpComposerInstallerDownloads/php.zip"
             );
 
-            if (installXdebug)
+            if (optionHandler.IsOptionEnabled("xdebug"))
             {
                 var xdebug = Xdebug.GetLatestPackage(selectedPhpRelease, phpReleases[selectedPhpRelease]["builtwith"]);
                 xdebugVersion = xdebug["version"];
@@ -196,7 +193,7 @@ namespace PhpComposerInstaller
                 );
             }
 
-            if (installVCRedist)
+            if (optionHandler.IsOptionEnabled("vc-redist"))
             {
                 // This is required for PHP, see https://www.php.net/manual/en/install.windows.requirements.php
                 Download.DownloadFile(
@@ -210,12 +207,15 @@ namespace PhpComposerInstaller
                 );
             }
 
-            Download.DownloadAndCheckFile(
-                "Downloading latest Composer 2.x... ",
-                new Uri(Composer.GetDownloadLinkForLatestVersion()),
-                Composer.GetChecksumForLatestVersion(),
-                "PhpComposerInstallerDownloads/composer.phar"
-            );
+            if (optionHandler.IsOptionEnabled("composer"))
+            {
+                Download.DownloadAndCheckFile(
+                    "Downloading latest Composer 2.x... ",
+                    new Uri(Composer.GetDownloadLinkForLatestVersion()),
+                    Composer.GetChecksumForLatestVersion(),
+                    "PhpComposerInstallerDownloads/composer.phar"
+                );
+            }
         }
 
         /// <summary>
@@ -228,7 +228,7 @@ namespace PhpComposerInstaller
             ZipFile.ExtractToDirectory("PhpComposerInstallerDownloads/php.zip", "PhpComposerInstallerDownloads/php");
             Console.WriteLine("OK.");
 
-            if (installXdebug)
+            if (optionHandler.IsOptionEnabled("xdebug"))
             {
                 Console.Write("  * Extracting Xdebug configuration... ");
                 ZipFile.ExtractToDirectory("PhpComposerInstallerDownloads/xdebug_src.zip", "PhpComposerInstallerDownloads/xdebug_src");
@@ -259,7 +259,7 @@ namespace PhpComposerInstaller
             // but from PHP 8.2 we need to enable it manually.
             phpIniContent = phpIniContent.Replace(";extension=zip", "extension=zip");
 
-            if (installXdebug)
+            if (optionHandler.IsOptionEnabled("xdebug"))
             {
                 phpIniContent = phpIniContent.Replace(";extension=xsl", ";extension=xsl\nzend_extension=xdebug");
 
@@ -276,13 +276,16 @@ namespace PhpComposerInstaller
             Console.WriteLine("OK.");
 
             // Composer
-            Console.Write("  * Copy composer.phar to the composer directory... ");
-            File.Copy("PhpComposerInstallerDownloads/composer.phar", "PhpComposerInstallerDownloads/composer/composer.phar");
-            Console.WriteLine("OK.");
+            if (optionHandler.IsOptionEnabled("composer"))
+            {
+                Console.Write("  * Copy composer.phar to the composer directory... ");
+                File.Copy("PhpComposerInstallerDownloads/composer.phar", "PhpComposerInstallerDownloads/composer/composer.phar");
+                Console.WriteLine("OK.");
 
-            Console.Write("  * Create runnable .bat file for Composer... ");
-            Composer.GenerateComposerBatchFile();
-            Console.WriteLine("OK.");
+                Console.Write("  * Create runnable .bat file for Composer... ");
+                Composer.GenerateComposerBatchFile();
+                Console.WriteLine("OK.");
+            }
         }
 
         /// <summary>
@@ -295,7 +298,7 @@ namespace PhpComposerInstaller
             Console.WriteLine("  * Stop PHP processes that conflicts with this installer... ");
             PHP.KillRunningPhpProcessesByLocation(defaultPhpLocation);
 
-            if (installVCRedist)
+            if (optionHandler.IsOptionEnabled("vc-redist"))
             {
                 Console.Write("  * Run Visual C++ Redistributable Installer... ");
                 var proc = new Process
@@ -315,8 +318,14 @@ namespace PhpComposerInstaller
                 Console.WriteLine("OK.");
             }
 
-            Installer.CopyToLocalAppData();
-            Installer.AddToPathIfNecessary();
+            Installer.CopyPhpToLocalAppData();
+            Installer.AddPhpToPathIfNecessary();
+
+            if (optionHandler.IsOptionEnabled("composer"))
+            {
+                Installer.CopyComposerToLocalAppData();
+                Installer.AddComposerToPathIfNecessary();
+            }
         }
 
         /// <summary>
@@ -324,7 +333,7 @@ namespace PhpComposerInstaller
         /// </summary>
         private static void HandleCleanup()
         {
-            if (cleanup)
+            if (optionHandler.IsOptionEnabled("cleanup"))
             {
                 if (Directory.Exists("PhpComposerInstallerDownloads"))
                 {
@@ -343,17 +352,19 @@ namespace PhpComposerInstaller
         /// </summary>
         static void Main(string[] args)
         {
-            HandleArgs(args);
+            // Initialize the option handler
+            optionHandler = new OptionHandler(options);
+            optionHandler.HandleArgs(args);
 
             try
             {
-                if (uninstall)
+                if (optionHandler.IsOptionEnabled("uninstall"))
                 {
                     HandleUninstall();
                     return;
                 }
 
-                Console.WriteLine("Phase 1: Finding problems");
+                Console.WriteLine("Phase 1: Diagnostics");
                 Console.WriteLine("---------");
                 HandlePriorCheck();
                 Console.WriteLine(" ");
@@ -403,7 +414,6 @@ namespace PhpComposerInstaller
                 Console.WriteLine("FAILED.");
                 Console.WriteLine(ex.Message);
             }
-
         }
     }
 }
