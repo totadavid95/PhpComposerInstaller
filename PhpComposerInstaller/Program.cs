@@ -32,7 +32,7 @@ namespace PhpComposerInstaller {
             { "cleanup",    new Option(value: true,     description: "Delete the temporary files after installation") },
             { "composer",   new Option(value: true,     description: "Install Composer") },
             { "xdebug",     new Option(value: false,    description: "Install Xdebug") },
-            { "vc-redist",  new Option(value: false,    description: "Install Visual C++ Redistributable") }
+            { "vc-redist",  new Option(value: true,     description: "Install Visual C++ Redistributable") }
         };
 
         /// <summary>
