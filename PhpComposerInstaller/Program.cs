@@ -313,66 +313,81 @@ namespace PhpComposerInstaller {
         }
 
         /// <summary>
+        /// Handles the installation process.
+        /// </summary>
+        private static void HandleInstall() {
+            Console.WriteLine("Phase 1: Diagnostics");
+            Console.WriteLine("---------");
+            HandlePriorCheck();
+            Console.WriteLine(" ");
+
+            Console.WriteLine("Phase 2: PHP release selection");
+            Console.WriteLine("---------");
+            HandlePhpReleaseSelection();
+            Console.WriteLine(" ");
+
+            Console.WriteLine("Phase 3: Download tools from the Internet");
+            Console.WriteLine("---------");
+            HandleTempDirectory();
+            HandleDownloads();
+            Console.WriteLine(" ");
+
+            Console.WriteLine("Phase 4: Configure downloaded tools");
+            Console.WriteLine("---------");
+            HandleConfiguration();
+            Console.WriteLine(" ");
+
+            Console.WriteLine("Phase 5: Installing programs");
+            Console.WriteLine("---------");
+            HandleInstallation();
+            Console.WriteLine(" ");
+
+            Console.WriteLine("Phase 6: Delete temporary files");
+            Console.WriteLine("---------");
+            HandleCleanup();
+            Console.WriteLine(" ");
+
+            Console.WriteLine("Phase 7: Test your installation manually!");
+            Console.WriteLine("---------");
+            Console.WriteLine("  1.) Open the \"version.bat\" file in the InstallTest directory, then make sure that");
+            Console.WriteLine("      the version number of PHP and Composer is displayed on the console.");
+            Console.WriteLine(" ");
+            Console.WriteLine("  2.) Open the \"phpinfo.bat\" file in the InstallTest directory, which will start a PHP server");
+            Console.WriteLine("      and then open it in MS Edge. If this works well, the installation is probably successful.");
+            Console.WriteLine("      You can also visit this page if you want to check any PHP settings.");
+            Console.WriteLine(" ");
+        }
+
+        /// <summary>
         /// Main method of the program.
         /// </summary>
         static void Main(string[] args) {
-            // Initialize the option handler
-            optionHandler = new OptionHandler(options);
-            optionHandler.HandleArgs(args);
-
             try {
-                if (optionHandler.IsOptionEnabled("uninstall")) {
-                    HandleUninstall();
-                    return;
+                // Do not allow to run the installer multiple times at the same time.
+                if (Process.GetProcessesByName(Process.GetCurrentProcess().ProcessName).Length > 1) {
+                    throw new Exception("Another instance of the installer is already running.");
                 }
 
-                Console.WriteLine("Phase 1: Diagnostics");
-                Console.WriteLine("---------");
-                HandlePriorCheck();
-                Console.WriteLine(" ");
+                // Initialize the option handler.
+                optionHandler = new OptionHandler(options);
+                optionHandler.HandleArgs(args);
 
-                Console.WriteLine("Phase 2: PHP release selection");
-                Console.WriteLine("---------");
-                HandlePhpReleaseSelection();
-                Console.WriteLine(" ");
-
-                Console.WriteLine("Phase 3: Download tools from the Internet");
-                Console.WriteLine("---------");
-                HandleTempDirectory();
-                HandleDownloads();
-                Console.WriteLine(" ");
-
-                Console.WriteLine("Phase 4: Configure downloaded tools");
-                Console.WriteLine("---------");
-                HandleConfiguration();
-                Console.WriteLine(" ");
-
-                Console.WriteLine("Phase 5: Installing programs");
-                Console.WriteLine("---------");
-                HandleInstallation();
-                Console.WriteLine(" ");
-
-                Console.WriteLine("Phase 6: Delete temporary files");
-                Console.WriteLine("---------");
-                HandleCleanup();
-                Console.WriteLine(" ");
-
-                Console.WriteLine("Phase 7: Test your installation manually!");
-                Console.WriteLine("---------");
-                Console.WriteLine("  1.) Open the \"version.bat\" file in the InstallTest directory, then make sure that");
-                Console.WriteLine("      the version number of PHP and Composer is displayed on the console.");
-                Console.WriteLine(" ");
-                Console.WriteLine("  2.) Open the \"phpinfo.bat\" file in the InstallTest directory, which will start a PHP server");
-                Console.WriteLine("      and then open it in MS Edge. If this works well, the installation is probably successful.");
-                Console.WriteLine("      You can also visit this page if you want to check any PHP settings.");
-                Console.WriteLine(" ");
-
-                Console.WriteLine(" Installation is complete. Press any key to exit...");
-                Console.ReadKey();
-            } catch (Exception ex) {
+                // If the user specified the --uninstall argument, we should uninstall the programs.
+                // Otherwise, we should install them.
+                if (optionHandler.IsOptionEnabled("uninstall")) {
+                    HandleUninstall();
+                } else {
+                    HandleInstall();
+                }
+            } catch (Exception exception) {
                 // If any exception occurs, we want to display the error message and then exit the program.
-                Console.WriteLine("FAILED.");
-                Console.WriteLine(ex.Message);
+                Console.WriteLine("Installation tool encountered an error:");
+                Console.WriteLine(exception.Message);
+            } finally {
+                // TODO: Do not wait for keypress if the program is started from the command line.
+                // This is only necessary if the program is started from the file explorer.
+                Console.WriteLine("Press any key to exit...");
+                Console.ReadKey();
             }
         }
     }
