@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Reflection;
 
 namespace PhpComposerInstaller {
     /// <summary>
@@ -50,9 +51,16 @@ namespace PhpComposerInstaller {
             for (int i = 0; i < args.Length; i++) {
                 var arg = args[i].ToLower();
 
-                // Special case: --help
-                if (arg == "--help") {
+                // Special case: -h or --help
+                if (arg == "-h" || arg == "--help") {
                     PrintHelp();
+                    Environment.Exit(0);
+                }
+
+                // Special case: -v or --version
+                if (arg == "-v" || arg == "--version") {
+                    // Print Version property of the assembly
+                    Console.WriteLine(Assembly.GetExecutingAssembly().GetName().Version);
                     Environment.Exit(0);
                 }
 
