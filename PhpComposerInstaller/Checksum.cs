@@ -6,13 +6,13 @@ namespace PhpComposerInstaller {
     /// Checksum utility class.
     /// </summary>
     internal class Checksum {
-        private SHA256 _sha256;
+        private readonly SHA256 sha256;
 
         /// <summary>
         /// Constructor, initializes the SHA256 utility.
         /// </summary>
         public Checksum() {
-            _sha256 = SHA256.Create();
+            sha256 = SHA256.Create();
         }
 
         /// <summary>
@@ -20,7 +20,7 @@ namespace PhpComposerInstaller {
         /// </summary>
         private byte[] HashFile(string filename) {
             using (FileStream stream = File.OpenRead(filename)) {
-                return _sha256.ComputeHash(stream);
+                return sha256.ComputeHash(stream);
             }
         }
 

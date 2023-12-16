@@ -5,15 +5,15 @@ using System.Threading;
 
 namespace PhpComposerInstaller {
     /// <summary>
-    /// Download utility class, which integrates file downloader and progress bar.
+    /// Download utility class, integrating file downloader and progress bar.
     /// </summary>
     public class Downloader {
-        private volatile bool _completed;
-        private volatile ProgressBar _progressBar;
-        private EventWaitHandle _waitHandle;
+        private volatile bool completed;
+        private volatile ProgressBar progressBar;
+        private readonly EventWaitHandle waitHandle;
 
         public Downloader(EventWaitHandle waitHandle) {
-            _waitHandle = waitHandle;
+            this.waitHandle = waitHandle;
         }
 
         /// <summary>
@@ -21,33 +21,34 @@ namespace PhpComposerInstaller {
         /// and shows a progress bar in the console while downloading.
         /// </summary>
         public void DownloadFile(Uri address, string location) {
-            _completed = false;
-            _progressBar = new ProgressBar();
+            completed = false;
+            InitializeProgressBar();
 
-            WebClient client = new WebClient();
-            client.Headers.Add(HttpRequestHeader.UserAgent, "C# app");
-            client.DownloadFileCompleted += new AsyncCompletedEventHandler(Completed);
-            client.DownloadProgressChanged += new DownloadProgressChangedEventHandler(DownloadProgress);
-            client.DownloadFileAsync(address, location);
+            using (WebClient client = new WebClient()) {
+                client.Headers.Add(HttpRequestHeader.UserAgent, "C# app");
+                client.DownloadFileCompleted += Completed;
+                client.DownloadProgressChanged += DownloadProgress;
+                client.DownloadFileAsync(address, location);
+            }
         }
 
         /// <summary>
         /// Returns true if the download is completed.
         /// </summary>
-        public bool DownloadCompleted { get { return _completed; } }
+        public bool DownloadCompleted => completed;
 
         /// <summary>
         /// Updates the progress bar.
         /// </summary>
         private void DownloadProgress(object sender, DownloadProgressChangedEventArgs e) {
-            _progressBar.Report((double)e.ProgressPercentage / 100);
+            progressBar.Report(e.ProgressPercentage / 100.0);
         }
 
         /// <summary>
         /// Disposes the progress bar and sets the wait handle.
         /// </summary>
         private void Completed(object sender, AsyncCompletedEventArgs e) {
-            _progressBar.Dispose();
+            DisposeProgressBar();
 
             if (e.Cancelled) {
                 Console.WriteLine("Cancelled.");
@@ -55,8 +56,22 @@ namespace PhpComposerInstaller {
                 Console.WriteLine("Downloaded.");
             }
 
-            _completed = true;
-            _waitHandle.Set();
+            completed = true;
+            waitHandle.Set();
+        }
+
+        /// <summary>
+        /// Initializes the progress bar.
+        /// </summary>
+        private void InitializeProgressBar() {
+            progressBar = new ProgressBar();
+        }
+
+        /// <summary>
+        /// Disposes the progress bar.
+        /// </summary>
+        private void DisposeProgressBar() {
+            progressBar.Dispose();
         }
     }
 }
