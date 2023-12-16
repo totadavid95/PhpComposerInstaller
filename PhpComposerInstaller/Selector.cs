@@ -1,32 +1,24 @@
-﻿using System;
+using System;
 
-namespace PhpComposerInstaller
-{
+namespace PhpComposerInstaller {
     /// <summary>
     /// Console menu selector.
     /// </summary>
-    internal class Selector
-    {
+    internal class Selector {
         /// <summary>
         /// Shows a menu with the given options and returns the selected option.
         /// </summary>
-        public static string ShowSelectorMenu(string[] options)
-        {
+        public static string ShowSelectorMenu(string[] options) {
             int optionsCount = options.Length;
             int selected = 0;
             bool done = false;
 
-            while (!done)
-            {
-                for (int i = 0; i < optionsCount; i++)
-                {
-                    if (selected == i)
-                    {
+            while (!done) {
+                for (int i = 0; i < optionsCount; i++) {
+                    if (selected == i) {
                         Console.ForegroundColor = ConsoleColor.Cyan;
                         Console.Write("    > ");
-                    }
-                    else
-                    {
+                    } else {
                         Console.Write("      ");
                     }
 
@@ -34,8 +26,7 @@ namespace PhpComposerInstaller
                     Console.ResetColor();
                 }
 
-                switch (Console.ReadKey(true).Key)
-                {
+                switch (Console.ReadKey(true).Key) {
                     case ConsoleKey.UpArrow:
                         selected = Math.Max(0, selected - 1);
                         break;

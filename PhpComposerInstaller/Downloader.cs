@@ -1,21 +1,18 @@
-﻿using System;
+using System;
 using System.ComponentModel;
 using System.Net;
 using System.Threading;
 
-namespace PhpComposerInstaller
-{
+namespace PhpComposerInstaller {
     /// <summary>
     /// Download utility class, which integrates file downloader and progress bar.
     /// </summary>
-    public class Downloader
-    {
+    public class Downloader {
         private volatile bool _completed;
         private volatile ProgressBar _progressBar;
         private EventWaitHandle _waitHandle;
 
-        public Downloader(EventWaitHandle waitHandle)
-        {
+        public Downloader(EventWaitHandle waitHandle) {
             _waitHandle = waitHandle;
         }
 
@@ -23,8 +20,7 @@ namespace PhpComposerInstaller
         /// Downloads the file from the given address to the given local destination,
         /// and shows a progress bar in the console while downloading.
         /// </summary>
-        public void DownloadFile(Uri address, string location)
-        {
+        public void DownloadFile(Uri address, string location) {
             _completed = false;
             _progressBar = new ProgressBar();
 
@@ -43,24 +39,19 @@ namespace PhpComposerInstaller
         /// <summary>
         /// Updates the progress bar.
         /// </summary>
-        private void DownloadProgress(object sender, DownloadProgressChangedEventArgs e)
-        {
+        private void DownloadProgress(object sender, DownloadProgressChangedEventArgs e) {
             _progressBar.Report((double)e.ProgressPercentage / 100);
         }
 
         /// <summary>
         /// Disposes the progress bar and sets the wait handle.
         /// </summary>
-        private void Completed(object sender, AsyncCompletedEventArgs e)
-        {
+        private void Completed(object sender, AsyncCompletedEventArgs e) {
             _progressBar.Dispose();
 
-            if (e.Cancelled)
-            {
+            if (e.Cancelled) {
                 Console.WriteLine("Cancelled.");
-            }
-            else
-            {
+            } else {
                 Console.WriteLine("Downloaded.");
             }
 

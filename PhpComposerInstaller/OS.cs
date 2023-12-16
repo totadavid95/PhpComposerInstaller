@@ -1,24 +1,19 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
 
-namespace PhpComposerInstaller
-{
-    internal class OS
-    {
+namespace PhpComposerInstaller {
+    internal class OS {
         /// <summary>
         /// Finds the locations of the given program by calling the where.exe utility.
         /// </summary>
-        public static List<string> FindProgramLocations(string name)
-        {
+        public static List<string> FindProgramLocations(string name) {
             List<string> locations = new List<string>();
 
-            var proc = new Process
-            {
-                StartInfo = new ProcessStartInfo
-                {
+            var proc = new Process {
+                StartInfo = new ProcessStartInfo {
                     // TODO: Remove static C:\Windows\ path.
                     FileName = "C:\\Windows\\System32\\where.exe",
                     Arguments = name,
@@ -30,8 +25,7 @@ namespace PhpComposerInstaller
 
             proc.Start();
 
-            while (!proc.StandardOutput.EndOfStream)
-            {
+            while (!proc.StandardOutput.EndOfStream) {
                 string line = proc.StandardOutput.ReadLine()?.TrimEnd(Environment.NewLine.ToCharArray());
                 locations.Add(line);
             }
@@ -41,8 +35,7 @@ namespace PhpComposerInstaller
         /// <summary>
         /// Adds the given path to the user's Path environment variable (if it's not already there).
         /// </summary>
-        public static bool AddToCurrentUserPath(string path)
-        {
+        public static bool AddToCurrentUserPath(string path) {
             var currentPathVariable = Environment.GetEnvironmentVariable("Path", EnvironmentVariableTarget.User);
 
             // If we get null for the current Path variable, or the path is already in it, so
@@ -58,8 +51,7 @@ namespace PhpComposerInstaller
         /// <summary>
         /// Removes the given path from the user's Path environment variable (if it's there).
         /// </summary>
-        public static bool RemoveFromCurrentUserPath(string pathToRemove)
-        {
+        public static bool RemoveFromCurrentUserPath(string pathToRemove) {
             var currentPathVariable = Environment.GetEnvironmentVariable("Path", EnvironmentVariableTarget.User);
 
             // If we get null for the current Path variable, or there is no match for the path
@@ -67,8 +59,7 @@ namespace PhpComposerInstaller
             if (
                 currentPathVariable == null ||
                 currentPathVariable.IndexOf(pathToRemove, StringComparison.CurrentCultureIgnoreCase) == -1
-            )
-            {
+            ) {
                 return false;
             }
 
@@ -94,23 +85,16 @@ namespace PhpComposerInstaller
         /// <summary>
         /// Deletes the given directory and all its contents.
         /// </summary>
-        public static void DeleteDirectory(string path)
-        {
-            foreach (string directory in Directory.GetDirectories(path))
-            {
+        public static void DeleteDirectory(string path) {
+            foreach (string directory in Directory.GetDirectories(path)) {
                 DeleteDirectory(directory);
             }
 
-            try
-            {
+            try {
                 Directory.Delete(path, true);
-            }
-            catch (IOException)
-            {
+            } catch (IOException) {
                 Directory.Delete(path, true);
-            }
-            catch (UnauthorizedAccessException)
-            {
+            } catch (UnauthorizedAccessException) {
                 Directory.Delete(path, true);
             }
         }
@@ -119,13 +103,11 @@ namespace PhpComposerInstaller
         /// Copies the contents of the source directory to the destination directory.
         /// Source: https://docs.microsoft.com/en-us/dotnet/standard/io/how-to-copy-directories
         /// </summary>
-        public static void DirectoryCopy(string sourceDirName, string destDirName, bool copySubDirs)
-        {
+        public static void DirectoryCopy(string sourceDirName, string destDirName, bool copySubDirs) {
             // Get the subdirectories for the specified directory.
             DirectoryInfo dir = new DirectoryInfo(sourceDirName);
 
-            if (!dir.Exists)
-            {
+            if (!dir.Exists) {
                 throw new DirectoryNotFoundException("Source directory does not exist or could not be found: " + sourceDirName);
             }
 
@@ -136,17 +118,14 @@ namespace PhpComposerInstaller
 
             // Get the files in the directory and copy them to the new location.
             FileInfo[] files = dir.GetFiles();
-            foreach (FileInfo file in files)
-            {
+            foreach (FileInfo file in files) {
                 string temppath = Path.Combine(destDirName, file.Name);
                 file.CopyTo(temppath, false);
             }
 
             // If copying subdirectories, copy them and their contents to new location.
-            if (copySubDirs)
-            {
-                foreach (DirectoryInfo subdir in dirs)
-                {
+            if (copySubDirs) {
+                foreach (DirectoryInfo subdir in dirs) {
                     string temppath = Path.Combine(destDirName, subdir.Name);
                     DirectoryCopy(subdir.FullName, temppath, copySubDirs);
                 }

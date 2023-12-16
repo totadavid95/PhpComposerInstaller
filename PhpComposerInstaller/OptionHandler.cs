@@ -1,14 +1,12 @@
 using System;
 using System.Collections.Generic;
 
-namespace PhpComposerInstaller
-{
+namespace PhpComposerInstaller {
     /// <summary>
     /// Represents a command-line option with a boolean value and a description.
     /// </summary>
     /// TODO: add support for other types of options, if needed.
-    internal class Option
-    {
+    internal class Option {
         /// <summary>
         /// Gets or sets the boolean value of the option.
         /// </summary>
@@ -24,8 +22,7 @@ namespace PhpComposerInstaller
         /// </summary>
         /// <param name="value">The initial value of the option.</param>
         /// <param name="description">The description of the option.</param>
-        public Option(bool value, string description)
-        {
+        public Option(bool value, string description) {
             Value = value;
             Description = description;
         }
@@ -34,16 +31,14 @@ namespace PhpComposerInstaller
     /// <summary>
     /// Handles command-line options and provides methods for processing arguments.
     /// </summary>
-    internal class OptionHandler
-    {
+    internal class OptionHandler {
         private readonly Dictionary<string, Option> options;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="OptionHandler"/> class.
         /// </summary>
         /// <param name="options">The dictionary of command-line options.</param>
-        public OptionHandler(Dictionary<string, Option> options)
-        {
+        public OptionHandler(Dictionary<string, Option> options) {
             this.options = options;
         }
 
@@ -51,22 +46,18 @@ namespace PhpComposerInstaller
         /// Handles command-line arguments and updates the state of options accordingly.
         /// </summary>
         /// <param name="args">The command-line arguments.</param>
-        public void HandleArgs(string[] args)
-        {
-            for (int i = 0; i < args.Length; i++)
-            {
+        public void HandleArgs(string[] args) {
+            for (int i = 0; i < args.Length; i++) {
                 var arg = args[i].ToLower();
 
                 // Special case: --help
-                if (arg == "--help")
-                {
+                if (arg == "--help") {
                     PrintHelp();
                     Environment.Exit(0);
                 }
 
                 // Option arguments must start with "--" and they can be negated with "--no-" prefix
-                if (!arg.StartsWith("--"))
-                {
+                if (!arg.StartsWith("--")) {
                     Console.WriteLine("Unknown argument: " + args[i]);
                     continue;
                 }
@@ -74,13 +65,11 @@ namespace PhpComposerInstaller
                 arg = arg.Substring("--".Length);
                 var state = !arg.StartsWith("no-");
 
-                if (!state)
-                {
+                if (!state) {
                     arg = arg.Substring("no-".Length);
                 }
 
-                if (!options.ContainsKey(arg))
-                {
+                if (!options.ContainsKey(arg)) {
                     // Just a warning, we don't want to exit the program
                     Console.WriteLine("Unknown argument: " + args[i]);
                     continue;
@@ -96,10 +85,8 @@ namespace PhpComposerInstaller
         /// </summary>
         /// <param name="optionName">The name of the option to handle.</param>
         /// <param name="state">The new state of the option.</param>
-        private void HandleOption(string optionName, bool state)
-        {
-            if (options.TryGetValue(optionName, out var option))
-            {
+        private void HandleOption(string optionName, bool state) {
+            if (options.TryGetValue(optionName, out var option)) {
                 option.Value = state;
             }
         }
@@ -109,8 +96,7 @@ namespace PhpComposerInstaller
         /// </summary>
         /// <param name="option">The option to print the status for.</param>
         /// <returns>The status of the option as a string.</returns>
-        private string PrintOptionStatus(Option option)
-        {
+        private string PrintOptionStatus(Option option) {
             return option.Value ? "ON" : "OFF";
         }
 
@@ -119,10 +105,8 @@ namespace PhpComposerInstaller
         /// </summary>
         /// <param name="optionName">The name of the option to check.</param>
         /// <returns>True if the option is enabled; otherwise, false.</returns>
-        public bool IsOptionEnabled(string optionName)
-        {
-            if (options.TryGetValue(optionName, out var option))
-            {
+        public bool IsOptionEnabled(string optionName) {
+            if (options.TryGetValue(optionName, out var option)) {
                 return option.Value;
             }
 
@@ -132,8 +116,7 @@ namespace PhpComposerInstaller
         /// <summary>
         /// Prints the help message.
         /// </summary>
-        private void PrintHelp()
-        {
+        private void PrintHelp() {
             const string tool = "PhpComposerInstaller.exe";
             const string readmeUrl = "https://github.com/totadavid95/PhpComposerInstaller/blob/master/README.md";
 
@@ -141,8 +124,7 @@ namespace PhpComposerInstaller
             Console.WriteLine(" ");
             Console.WriteLine("Options:");
 
-            foreach (var option in options)
-            {
+            foreach (var option in options) {
                 Console.WriteLine($"  --{option.Key,-12} {option.Value.Description} (default: {PrintOptionStatus(option.Value)})");
             }
 
