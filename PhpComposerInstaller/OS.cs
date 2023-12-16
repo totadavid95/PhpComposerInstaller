@@ -14,8 +14,7 @@ namespace PhpComposerInstaller {
 
             var proc = new Process {
                 StartInfo = new ProcessStartInfo {
-                    // TODO: Remove static C:\Windows\ path.
-                    FileName = "C:\\Windows\\System32\\where.exe",
+                    FileName = "where.exe",
                     Arguments = name,
                     UseShellExecute = false,
                     RedirectStandardOutput = true,
