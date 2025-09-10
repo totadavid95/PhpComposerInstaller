@@ -12,6 +12,9 @@ namespace PhpComposerInstaller {
         private static readonly string PhpInstallationPath = Path.Combine(ProgramsFolder, "php");
         private static readonly string ComposerInstallationPath = Path.Combine(ProgramsFolder, "composer");
 
+        private static readonly string RoamingAppDataFolder = Environment.GetEnvironmentVariable("AppData");
+        private static readonly string ComposerVendorBinPath = Path.Combine(Path.Combine(Path.Combine(RoamingAppDataFolder, "Composer"), "vendor"), "bin");
+
         /// <summary>
         /// Copies the downloaded files to the local app data folder and removes the previous installation if it exists.
         /// </summary>
@@ -117,6 +120,7 @@ namespace PhpComposerInstaller {
         /// </summary>
         public static void AddComposerToPathIfNecessary() {
             AddToPathIfNecessary(ComposerInstallationPath, "Composer");
+            AddToPathIfNecessary(ComposerVendorBinPath, "Composer binaries"); // to run binaries like Laravel installer
         }
 
         /// <summary>
